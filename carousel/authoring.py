@@ -16,6 +16,7 @@ import textwrap
 
 from .config import IMAGE_STYLE
 from . import deck as deck_io
+from . import locales
 
 # Budgets from the editorial workflow — what actually fits a 1080x1350 slide.
 BUDGETS = {
@@ -74,7 +75,7 @@ _CLOSING = re.compile(r"^(chiudi|close|closing|cta|conclusione)\b", re.I)
 _SOURCES = re.compile(r"^(fonti|sources|credits)\s*:", re.I)
 
 
-def from_markdown(text):
+def from_markdown(text, locale=None):
     """Parse the workflow's blog-post template into a deck.
 
     Recognises: `# Title`, the line under it as the subtitle, every `### …` as a
@@ -140,9 +141,16 @@ def from_markdown(text):
         secrets.append(current)
 
     content["secrets"] = [[h, " ".join(b).strip()] for h, b in secrets if h]
-    content["badge"] = f"{len(content['secrets'])} SEGRETI"
+    content["badge"] = badge_for(len(content["secrets"]), locale)
     content["name"] = deck_io.slugify(content["title"])
+    if locale and locale != locales.DEFAULT:
+        content["locale"] = locale
     return content
+
+
+def badge_for(count, locale=None):
+    """"5 POINTS" / "5 SEGRETI" — the cover marker, in the deck's language."""
+    return f"{count} {locales.load(locale)['badge_unit']}"
 
 
 # --------------------------------------------------------------- image prompts
@@ -175,7 +183,7 @@ def scaffold_prompts(content, style=IMAGE_STYLE):
 
 
 # --------------------------------------------------------------------- wizard
-def wizard(ask=input, out=print):
+def wizard(ask=input, out=print, locale=None):
     """Guided questions -> a deck. `ask`/`out` are injectable for testing."""
     def field(label, key, hint="", required=True):
         limit, unit = BUDGETS.get(key, (None, None))
@@ -200,14 +208,13 @@ def wizard(ask=input, out=print):
                         value = again
             return value
 
-    out("New carousel deck. Ctrl-C to abort.\n"
-        "Copy is Italian, 'tu', imperative, concrete, no emoji.")
+    out("New carousel deck. Ctrl-C to abort.")
 
     content = {}
     content["title"] = field("Cover title — the promise", "title",
-                             "e.g. 5 segreti per foto d'auto da pro")
+                             "e.g. 5 ways to shoot cars like a pro")
     content["subtitle"] = field("Subtitle — the constraint or tension", "subtitle",
-                                "e.g. senza studio, senza flash")
+                                "e.g. no studio, no flash")
 
     out("\nNow the secrets. Blank headline when you're done "
         f"(max {MAX_SECRETS}). Wrap key terms in **double asterisks** to bold them.")
@@ -224,9 +231,9 @@ def wizard(ask=input, out=print):
     content["secrets"] = secrets
 
     content["cta_q"] = field("Closing question — invites a comment", "cta_q",
-                             "e.g. Qual è il posto dove torni sempre a fotografare?")
+                             "e.g. Which place do you keep going back to?")
 
-    content["badge"] = f"{len(secrets)} SEGRETI"
+    content["badge"] = badge_for(len(secrets), locale)
     content["name"] = deck_io.slugify(
         field("Short folder name", "name",
               f"kebab-case; Enter to use '{deck_io.slugify(content['title'])}'",
@@ -244,6 +251,8 @@ def wizard(ask=input, out=print):
         content["caption"] = "\n".join(caption)
 
     content["image_prompts"] = scaffold_prompts(content)
+    if locale and locale != locales.DEFAULT:
+        content["locale"] = locale
     return content
 
 

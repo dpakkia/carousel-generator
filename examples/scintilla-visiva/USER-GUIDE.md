@@ -21,7 +21,7 @@ Fraunces magazine look), `v6` (luminous duotone), and `v7` (kinetic teaching —
 viewfinder grid + diagram furniture). They share one `content.json`, so you can
 re-skin any deck by re-rendering with a different style and recomposing. All
 fonts are bundled in `fonts/`; styles themselves are JSON, so a new look is a new
-file — see `docs/STYLES.md`.
+file — see `../../docs/STYLES.md`.
 
 ---
 

@@ -12,6 +12,7 @@ from PIL import Image, ImageDraw
 
 from . import ops
 from . import values
+from . import locales
 from .style import Style, StyleError
 from .config import HANDLE, WORDMARK
 
@@ -98,7 +99,12 @@ def _run(ctx, spec, style, kind, index):
 
 
 def slide_data(content, kind, number=None, index=None, count=None, total=None):
-    """The text slots a recipe can reference as $title, $headline, {index:02d}…"""
+    """Everything a recipe can reference: the deck's copy, the brand, the chrome.
+
+    Deck fields are `$title`, `$headline`, `{index:02d}`…; the fixed words a
+    style draws around them (`$scroll`, `$follow`) come from the deck's locale,
+    already filled in with the brand's handle.
+    """
     data = {
         "title": content.get("title", ""),
         "subtitle": content.get("subtitle", ""),
@@ -120,6 +126,11 @@ def slide_data(content, kind, number=None, index=None, count=None, total=None):
         headline, body = content["secrets"][index - 1]
         data["headline"] = headline
         data["body"] = body
+
+    # Chrome last: it may interpolate the brand fields above, and a deck's own
+    # `strings` block wins over the language file.
+    data.update(locales.resolve(content.get("locale"), data,
+                                content.get("strings")))
     return data
 
 
@@ -154,7 +165,7 @@ def apply_variant(style, content):
     order = style.data.get("variant_order") or sorted(variants)
     wanted = (content.get("palette") or "").strip().lower()
     if wanted not in variants:
-        seed = zlib.crc32((content.get("name") or "carosello").encode())
+        seed = zlib.crc32((content.get("name") or "deck").encode())
         wanted = order[seed % len(order)]
 
     picked = Style(copy.deepcopy(style.data), style.path)

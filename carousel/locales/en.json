@@ -1,0 +1,21 @@
+{
+  "_note": "Slide chrome — the fixed words a style draws around your copy. Styles reference these as $scroll, $save, {figure} and so on, so one file re-languages every style at once. Copy this to add a language; a deck selects it with \"locale\": \"<name>\".",
+
+  "scroll": "Swipe →",
+  "scroll_caps": "SWIPE →",
+  "scroll_plain": "Swipe",
+  "continue": "Continue",
+
+  "save": "Save it for later",
+  "save_caps": "SAVE · SWIPE",
+  "follow": "Follow {handle}",
+  "follow_caps": "FOLLOW {handle}",
+
+  "section": "POINT",
+  "figure": "FIG.",
+  "number_abbr": "NO.",
+  "focus_lock": "FOCUS · LOCK",
+
+  "badge_unit": "POINTS",
+  "deck_fallback": "deck"
+}

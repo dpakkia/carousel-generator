@@ -6,6 +6,8 @@ build-backend = "setuptools.build_meta"
 name = "carousel-generator"
 version = "1.0.0"
 description = "Data-driven Instagram carousel generator: copy in one JSON, look in another."
+license = "MIT"
+keywords = ["instagram", "carousel", "social-media", "generator", "pillow", "design-system"]
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = ["Pillow>=10.0"]
@@ -20,4 +22,4 @@ carousel = "carousel.cli:main"
 packages = ["carousel", "carousel.ops"]
 
 [tool.setuptools.package-data]
-carousel = ["styles/*.json"]
+carousel = ["styles/*.json", "locales/*.json"]

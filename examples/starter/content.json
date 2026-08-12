@@ -1,0 +1,43 @@
+{
+  "name": "natural-light-portraits",
+
+  "locale": "en",
+  "handle": "@yourhandle",
+  "wordmark": "YOUR BRAND",
+
+  "title": "4 ways to shoot portraits in natural light",
+  "subtitle": "no flash, no reflectors",
+  "badge": "4 POINTS",
+
+  "secrets": [
+    [
+      "Look for shade, not sun",
+      "Step into **open shade** — a porch, the north side of a wall. The light arrives soft and even, and nobody squints into the lens."
+    ],
+    [
+      "Expose for the highlights",
+      "Drop **-0.7 EV** and protect the bright end. Lifting a shadow later costs a little noise; a blown-out cheek is simply gone."
+    ],
+    [
+      "Make the wall your reflector",
+      "Put your subject **one metre** from a pale wall and let it bounce. It fills the shadows under the eyes with no kit at all."
+    ],
+    [
+      "Shoot f/2.8, not f/1.2",
+      "Wide open, **one eyelash** is sharp and the rest isn't. At f/2.8 both eyes hold focus and the background still falls away."
+    ]
+  ],
+
+  "cta_q": "Which place do you keep going back to shoot?",
+
+  "image_prompts": [
+    "Portrait scene in open shade under a stone porch, warm bounce light, dark moody background, shallow depth of field. Cinematic and moody, deep near-black background, soft directional light, fine film grain, premium editorial photography. 1080x1350 portrait (4:5), large near-black negative space across the lower half, low contrast, nothing busy. No text, no letters, no watermark.",
+    "Soft window light falling across a textured wall, deep shadows, warm highlights. Cinematic and moody, deep near-black background, soft directional light, fine film grain, premium editorial photography. 1080x1350 portrait (4:5), large near-black negative space down the left column, low contrast, nothing busy. No text, no letters, no watermark.",
+    "Camera screen glowing in a dim room, highlights protected, quiet still life. Cinematic and moody, deep near-black background, soft directional light, fine film grain, premium editorial photography. 1080x1350 portrait (4:5), large near-black negative space down the left column, low contrast, nothing busy. No text, no letters, no watermark.",
+    "Pale plaster wall bouncing warm light into shadow, minimal architectural detail. Cinematic and moody, deep near-black background, soft directional light, fine film grain, premium editorial photography. 1080x1350 portrait (4:5), large near-black negative space down the left column, low contrast, nothing busy. No text, no letters, no watermark.",
+    "Close detail of a lens aperture ring, dark background, warm rim light. Cinematic and moody, deep near-black background, soft directional light, fine film grain, premium editorial photography. 1080x1350 portrait (4:5), large near-black negative space down the left column, low contrast, nothing busy. No text, no letters, no watermark.",
+    "Quiet golden-hour location, empty and atmospheric, long shadows. Cinematic and moody, deep near-black background, soft directional light, fine film grain, premium editorial photography. 1080x1350 portrait (4:5), a calm, empty centre, low contrast, nothing busy. No text, no letters, no watermark."
+  ],
+
+  "caption": "4 ways to shoot portraits in natural light, without flash or reflectors.\n\nThe best light is usually the light you don't have to build. You just have to know where to stand.\n\nSave this for your next shoot, and tell me in the comments: which place do you keep going back to?\n\n#portrait #naturallight #photography"
+}

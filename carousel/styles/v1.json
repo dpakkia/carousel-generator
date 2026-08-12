@@ -50,7 +50,7 @@
       { "op": "text", "value": "$title", "type": "title", "x": "MX", "y": 670 },
       { "op": "text", "value": "$subtitle", "type": "subtitle", "x": "MX", "y": { "after": 16 } },
 
-      { "op": "text", "value": "Scorri →", "type": "cue", "x": "MX", "y": "H - 96",
+      { "op": "text", "value": "$scroll", "type": "cue", "x": "MX", "y": "H - 96",
         "align": "right", "advance": false }
     ],
 
@@ -93,9 +93,9 @@
       ] },
 
       { "op": "text", "value": "$question", "type": "question", "x": "MX", "y": 640, "align": "center" },
-      { "op": "text", "value": "Salva per la prossima sessione", "type": "save", "x": "MX",
+      { "op": "text", "value": "$save", "type": "save", "x": "MX",
         "y": { "after": 46 }, "align": "center" },
-      { "op": "text", "value": "Segui {handle}", "type": "follow", "x": "MX",
+      { "op": "text", "value": "$follow", "type": "follow", "x": "MX",
         "y": { "after": 0 }, "align": "center" }
     ]
   }

@@ -10,7 +10,7 @@ import unittest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from carousel import deck, engine, render, fonts, authoring  # noqa: E402
+from carousel import deck, engine, render, fonts, authoring, locales  # noqa: E402
 from carousel import typography as ty                               # noqa: E402
 from carousel import values                                         # noqa: E402
 from carousel.style import Style, StyleError, available             # noqa: E402
@@ -116,7 +116,8 @@ class TestDeck(unittest.TestCase):
 
     def test_slugify(self):
         self.assertEqual(deck.slugify("Foto d'auto PRO!"), "foto-d-auto-pro")
-        self.assertEqual(deck.slugify(""), "carosello")
+        self.assertEqual(deck.slugify(""), "deck")
+        self.assertEqual(deck.slugify("", "carosello"), "carosello")
 
     def test_deck_number_reads_every_naming_state(self):
         self.assertEqual(deck.deck_number("TODO-07-x"), 7)
@@ -222,7 +223,7 @@ class TestAuthoring(unittest.TestCase):
 
     def test_badge_and_name_are_derived(self):
         content = authoring.from_markdown(ARTICLE)
-        self.assertEqual(content["badge"], "2 SEGRETI")
+        self.assertEqual(content["badge"], "2 POINTS")
         self.assertEqual(content["name"], "4-segreti-per-ritratti-in-luce-naturale")
 
     def test_intro_and_sources_are_not_slides(self):
@@ -257,6 +258,77 @@ class TestAuthoring(unittest.TestCase):
 
     def test_article_without_secrets_yields_none(self):
         self.assertEqual(authoring.from_markdown("# Solo un titolo\n")["secrets"], [])
+
+
+class TestLocales(unittest.TestCase):
+    """Slide chrome is data, so one file re-languages every style."""
+
+    def test_shipped_languages_have_the_same_keys(self):
+        self.assertIn("en", locales.available())
+        base = set(locales.load("en"))
+        for name in locales.available():
+            with self.subTest(locale=name):
+                self.assertEqual(set(locales.load(name)), base,
+                                 f"{name}.json is missing or adding keys")
+
+    def test_no_style_hardcodes_chrome(self):
+        """A literal cue in a recipe would be invisible to translation."""
+        import glob, json as _json
+        leaked = []
+        for path in glob.glob(os.path.join(
+                os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                "carousel", "styles", "*.json")):
+            with open(path, encoding="utf-8") as fh:
+                raw = _json.dumps(_json.load(fh))
+            for word in ("Scorri", "Salva", "Segui", "SEGRETO", "SCORRI",
+                         "Continua", "SEGUI", "SALVA"):
+                if word in raw:
+                    leaked.append(f"{os.path.basename(path)}: {word}")
+        self.assertEqual(leaked, [], "chrome must come from carousel/locales/")
+
+    def test_chrome_reaches_the_slide_in_the_deck_language(self):
+        en = engine.slide_data(dict(DECK, locale="en"), "cta", 5, total=5)
+        it = engine.slide_data(dict(DECK, locale="it"), "cta", 5, total=5)
+        self.assertEqual(en["scroll"], "Swipe →")
+        self.assertEqual(it["scroll"], "Scorri →")
+
+    def test_follow_interpolates_the_brand_handle(self):
+        data = engine.slide_data(dict(DECK, locale="en", handle="@someone"),
+                                 "cta", 5, total=5)
+        self.assertEqual(data["follow"], "Follow @someone")
+
+    def test_a_deck_can_override_one_string(self):
+        data = engine.slide_data(
+            dict(DECK, locale="en", strings={"save": "Pin this"}), "cta", 5, total=5)
+        self.assertEqual(data["save"], "Pin this")
+        self.assertEqual(data["scroll"], "Swipe →", "other strings untouched")
+
+    def test_unknown_language_is_reported(self):
+        with self.assertRaises(locales.LocaleError):
+            locales.load("klingon")
+
+    def test_every_style_renders_in_every_language(self):
+        for name in available():
+            for lang in locales.available():
+                with self.subTest(style=name, locale=lang):
+                    imgs = engine.render_deck(Style.load(name), dict(DECK, locale=lang))
+                    self.assertTrue(all(im.getbbox() for im in imgs))
+
+
+class TestUnbrandedDeck(unittest.TestCase):
+    """A deck with no brand set must still render, just without the marks."""
+
+    def test_renders_without_handle_or_wordmark(self):
+        bare = {k: v for k, v in DECK.items()}
+        for name in available():
+            with self.subTest(style=name):
+                imgs = engine.render_deck(Style.load(name), bare)
+                self.assertTrue(all(im.getbbox() for im in imgs))
+
+    def test_brand_defaults_are_not_personal(self):
+        from carousel import config
+        self.assertEqual(config.HANDLE, "")
+        self.assertEqual(config.WORDMARK, "")
 
 
 class TestHollowType(unittest.TestCase):
@@ -295,7 +367,7 @@ def json_dumps(obj):
 class TestExampleDeck(unittest.TestCase):
     def test_shipped_example_is_valid(self):
         root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        content = deck.load(os.path.join(root, "example", "content.json"))
+        content = deck.load(os.path.join(root, "examples", "starter", "content.json"))
         self.assertEqual(deck.validate(content), [])
 
 

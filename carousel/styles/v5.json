@@ -61,7 +61,7 @@
       { "op": "text", "value": "$subtitle", "type": "subtitle", "x": "MX", "y": { "after": 22 } },
 
       { "op": "text", "value": "$handle", "type": "handle", "x": "MX", "y": "H - 70", "advance": false },
-      { "op": "text", "value": "Scorri", "type": "cue", "x": "MX", "y": "H - 74",
+      { "op": "text", "value": "$scroll_plain", "type": "cue", "x": "MX", "y": "H - 74",
         "align": "right", "advance": false }
     ],
 
@@ -75,14 +75,14 @@
         "align": "right", "advance": false },
 
       { "op": "text", "value": "{index:02d}", "type": "number", "x": "MX - 6", "y": 196, "advance": false },
-      { "op": "text", "value": "SEGRETO", "type": "seclabel", "x": "MX + 4", "y": 372, "advance": false },
+      { "op": "text", "value": "$section", "type": "seclabel", "x": "MX + 4", "y": 372, "advance": false },
       { "op": "rule", "x": "MX", "to": "W - MX", "y": 416, "color": "line", "alpha": 120, "width": 2 },
 
       { "op": "text", "value": "$headline", "type": "headline", "x": "MX", "y": 466 },
       { "op": "text", "value": "$body", "type": "body", "x": "MX", "y": { "after": 28 } },
 
       { "op": "text", "value": "$handle", "type": "handle", "x": "MX", "y": "H - 70", "advance": false },
-      { "op": "text", "value": "Continua", "type": "cue", "x": "MX", "y": "H - 74",
+      { "op": "text", "value": "$continue", "type": "cue", "x": "MX", "y": "H - 74",
         "align": "right", "advance": false }
     ],
 
@@ -106,9 +106,9 @@
       { "op": "rule", "x": "W / 2 - 90", "to": "W / 2 + 90", "y": { "after": 24 },
         "color": "gold", "alpha": 200, "width": 2 },
 
-      { "op": "text", "value": "Salva per la prossima sessione", "type": "save", "x": "MX",
+      { "op": "text", "value": "$save", "type": "save", "x": "MX",
         "y": { "after": 24 }, "align": "center" },
-      { "op": "text", "value": "Segui {handle}", "type": "follow", "x": "MX",
+      { "op": "text", "value": "$follow", "type": "follow", "x": "MX",
         "y": { "after": 0 }, "align": "center" }
     ]
   }

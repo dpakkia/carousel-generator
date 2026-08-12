@@ -65,7 +65,7 @@
 
       { "op": "rect", "box": ["MX", "BASE + 18", "MX + 132", "BASE + 26"], "fill": "ember",
         "note": "the ember accent bar — v3's signature mark" },
-      { "op": "text", "value": "Scorri →", "type": "cue", "x": "MX", "y": "BASE + 2",
+      { "op": "text", "value": "$scroll", "type": "cue", "x": "MX", "y": "BASE + 2",
         "align": "right", "advance": false }
     ],
 
@@ -108,9 +108,9 @@
 
       { "op": "text", "value": "$question", "type": "question", "x": "MX",
         "y": { "after": 0 }, "align": "center" },
-      { "op": "text", "value": "Salva per la prossima sessione", "type": "save",
+      { "op": "text", "value": "$save", "type": "save",
         "x": "MX", "y": { "after": 44 }, "align": "center" },
-      { "op": "text", "value": "Segui {handle}", "type": "follow",
+      { "op": "text", "value": "$follow", "type": "follow",
         "x": "MX", "y": { "after": 0 }, "align": "center" }
     ]
   }

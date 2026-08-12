@@ -70,7 +70,7 @@
       { "op": "rect", "box": ["TX", "cursor + 6", "TX + 150", "cursor + 14"], "fill": "signal" },
       { "op": "text", "value": "$subtitle", "type": "subtitle", "x": "TX", "y": { "after": 30 }, "width": "COL" },
 
-      { "op": "text", "value": "SCORRI →", "type": "cue", "x": "MX", "y": "H - MX - 50",
+      { "op": "text", "value": "$scroll_caps", "type": "cue", "x": "MX", "y": "H - MX - 50",
         "width": "W - 2 * MX - PAD + 16", "align": "right", "advance": false },
       { "op": "text", "value": "$handle", "type": "handle", "x": "TX - 16", "y": "H - MX - 50", "advance": false }
     ],
@@ -94,7 +94,7 @@
 
       { "op": "text", "value": "{index:02d}", "type": "number", "x": "TX - 6", "y": "240 + PAD - 20", "advance": false },
       { "op": "rect", "box": ["TX", "240 + PAD + 152", "TX + 110", "240 + PAD + 160"], "fill": "signal" },
-      { "op": "text", "value": "SEGRETO", "type": "seclabel", "x": "TX + num_w + 28",
+      { "op": "text", "value": "$section", "type": "seclabel", "x": "TX + num_w + 28",
         "y": "240 + PAD + 18", "advance": false },
 
       { "op": "cursor", "to": "240 + PAD + 150 + 18" },
@@ -124,9 +124,9 @@
 
       { "op": "text", "value": "$question", "type": "question", "x": "TX",
         "y": { "after": "PAD + 56" }, "width": "COL", "align": "center" },
-      { "op": "text", "value": "SALVA · SCORRI", "type": "save", "x": "TX",
+      { "op": "text", "value": "$save_caps", "type": "save", "x": "TX",
         "y": { "after": 34 }, "width": "COL", "align": "center" },
-      { "op": "text", "value": "SEGUI {handle}", "type": "follow", "x": "TX",
+      { "op": "text", "value": "$follow_caps", "type": "follow", "x": "TX",
         "y": { "after": 0 }, "width": "COL", "align": "center" }
     ]
   }

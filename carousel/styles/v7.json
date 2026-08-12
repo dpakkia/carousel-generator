@@ -66,7 +66,7 @@
       { "op": "text", "value": "$subtitle", "type": "subtitle", "x": "MX", "y": { "after": 22 } },
 
       { "op": "text", "value": "$handle", "type": "handle", "x": "MX", "y": "H - MX + 14", "advance": false },
-      { "op": "text", "value": "SCORRI →", "type": "cue", "x": "MX", "y": "H - MX + 13",
+      { "op": "text", "value": "$scroll_caps", "type": "cue", "x": "MX", "y": "H - MX + 13",
         "align": "right", "advance": false }
     ],
 
@@ -77,13 +77,13 @@
 
       { "op": "ellipse", "x": "MX + 6", "y": "MX - 24", "r": 6, "fill": "focus" },
       { "op": "text", "value": "$wordmark", "type": "hud", "x": "MX + 22", "y": "MX - 32", "advance": false },
-      { "op": "text", "value": "FIG. {index:02d} / {count:02d}", "type": "hud_r", "x": "MX", "y": "MX - 32",
+      { "op": "text", "value": "{figure} {index:02d} / {count:02d}", "type": "hud_r", "x": "MX", "y": "MX - 32",
         "align": "right", "advance": false },
 
       { "op": "measure", "name": "num", "value": "{index:02d}", "type": "number" },
       { "op": "text", "value": "{index:02d}", "type": "number", "x": "MX", "y": 188, "advance": false },
-      { "op": "text", "value": "SEGRETO", "type": "seclabel", "x": "MX + num_w + 26", "y": 214, "advance": false },
-      { "op": "text", "value": "NO. {index:02d} / {count:02d}", "type": "secref",
+      { "op": "text", "value": "$section", "type": "seclabel", "x": "MX + num_w + 26", "y": 214, "advance": false },
+      { "op": "text", "value": "{number_abbr} {index:02d} / {count:02d}", "type": "secref",
         "x": "MX + num_w + 26", "y": 250, "advance": false },
       { "op": "ticks", "x": "MX", "to": "W - MX", "y": 330, "count": 9, "length": 12, "minor": 6,
         "color": "amber", "alpha": 170, "width": 2 },
@@ -109,7 +109,7 @@
 
       { "op": "ellipse", "x": "MX + 6", "y": "MX - 24", "r": 6, "fill": "focus" },
       { "op": "text", "value": "$wordmark", "type": "hud", "x": "MX + 22", "y": "MX - 32", "advance": false },
-      { "op": "text", "value": "FOCUS · LOCK", "type": "hud_r", "x": "MX", "y": "MX - 32",
+      { "op": "text", "value": "$focus_lock", "type": "hud_r", "x": "MX", "y": "MX - 32",
         "align": "right", "advance": false },
 
       { "op": "measure", "name": "q", "value": "$question", "type": "question" },
@@ -124,9 +124,9 @@
       { "op": "bracket", "box": ["MX + 30", "cursor - q_h - 18", "W - MX - 30", "cursor + 6"],
         "length": 26, "color": "focus", "width": 3 },
 
-      { "op": "text", "value": "[ SALVA · SCORRI ]", "type": "save", "x": "MX",
+      { "op": "text", "value": "[ {save_caps} ]", "type": "save", "x": "MX",
         "y": { "after": 40 }, "align": "center" },
-      { "op": "text", "value": "SEGUI {handle}", "type": "follow", "x": "MX",
+      { "op": "text", "value": "$follow_caps", "type": "follow", "x": "MX",
         "y": { "after": 0 }, "align": "center" }
     ]
   }

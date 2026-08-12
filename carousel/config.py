@@ -1,8 +1,9 @@
 """Canvas geometry, font locations and brand constants.
 
 Everything here is shared by all seven styles. To rebrand the generator,
-this is the only file you need to touch: change HANDLE/WORDMARK and drop
-your own TTFs into fonts/.
+this is the only file you need to touch: set HANDLE/WORDMARK/IMAGE_STYLE and
+drop your own TTFs into fonts/. Everything here can also be overridden per deck
+from content.json.
 """
 import os
 
@@ -24,15 +25,19 @@ MONO_B = os.path.join(FONT_DIR, "SpaceMono-Bold.ttf")
 DEJAVU = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
 DEJAVU_BOLD = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
 
-HANDLE = "@scintillavisiva"
-WORDMARK = "SCINTILLA VISIVA"
+# Brand defaults. Empty means "don't draw it" — a style that asks for a wordmark
+# on an unbranded deck simply renders without one. Set them here for a single
+# brand, or per deck with "handle" / "wordmark" in content.json, which is what
+# you want when one install serves several clients.
+HANDLE = ""
+WORDMARK = ""
 
 # The house look for generated background plates. Every scaffolded image prompt
 # carries this clause, which is what keeps a deck visually coherent slide to
 # slide — rewrite it here to re-art-direct every future deck at once.
-IMAGE_STYLE = ("Cinematic and moody, deep charcoal near-black, warm amber-gold "
-               "forge glow, a subtle cool-teal accent, fine film grain, "
-               "premium editorial photography.")
+IMAGE_STYLE = ("Cinematic and moody, deep near-black background, soft "
+               "directional light, fine film grain, premium editorial "
+               "photography.")
 
 # Brand ground. Also the fallback plate colour in compose.py when a slide has
 # no bg_NN.png behind it.

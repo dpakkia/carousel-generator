@@ -55,9 +55,9 @@ def validate(content):
     return problems
 
 
-def slugify(name):
+def slugify(name, fallback="deck"):
     s = re.sub(r"[^a-z0-9]+", "-", (name or "").strip().lower())
-    return re.sub(r"-+", "-", s).strip("-") or "carosello"
+    return re.sub(r"-+", "-", s).strip("-") or fallback
 
 
 def next_index(root):
@@ -95,8 +95,8 @@ def deck_number(folder):
 def write_deck_txt(folder, c, total):
     """The human-readable record of the deck: copy + the per-slide IMG prompts.
 
-    gen_images.py reads its prompts back out of this file, so it is regenerated
-    from `image_prompts` on every render — edit content.json, never deck.txt.
+    Regenerated from `image_prompts` on every render, so edit content.json and
+    never deck.txt — this file is a record, not a source.
     """
     prompts = c.get("image_prompts", [])
     img = lambda i: prompts[i] if i < len(prompts) else ""

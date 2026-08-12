@@ -51,7 +51,7 @@ When I paste an **article**, you:
 
 ## When I give you an article
 
-1. **Read `example/content.json` first** for the schema, and the style you are
+1. **Read `content.json` in this folder first** for the schema, and the style you are
    about to use (`carousel/styles/vN.json`) for its type sizes — respect the
    length budgets below so no text overflows a slide. All seven styles share the
    same schema and budgets. `carousel check <file>` validates a deck.

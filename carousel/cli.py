@@ -65,6 +65,7 @@ def main(argv=None):
     p = sub.add_parser("new", help="build a content.json by answering questions")
     p.add_argument("--out", "-o", default="content.json")
     p.add_argument("--force", action="store_true", help="overwrite an existing file")
+    p.add_argument("--locale", "-l", help="language for the slide chrome (default: en)")
     p.set_defaults(func=cmd_new)
 
     p = sub.add_parser("import", help="turn a blog-post markdown file into a content.json")
@@ -73,6 +74,7 @@ def main(argv=None):
     p.add_argument("--force", action="store_true", help="overwrite an existing file")
     p.add_argument("--no-prompts", action="store_true",
                    help="leave image_prompts empty instead of scaffolding them")
+    p.add_argument("--locale", "-l", help="language for the slide chrome (default: en)")
     p.set_defaults(func=cmd_import)
 
     p = sub.add_parser("styles", help="list the available styles")
@@ -156,7 +158,7 @@ def cmd_new(args):
               file=sys.stderr)
         return 1
     try:
-        content = authoring.wizard()
+        content = authoring.wizard(locale=args.locale)
     except (KeyboardInterrupt, EOFError):
         print("\naborted — nothing written")
         return 1
@@ -169,7 +171,7 @@ def cmd_import(args):
               file=sys.stderr)
         return 1
     with open(args.article, encoding="utf-8") as f:
-        content = authoring.from_markdown(f.read())
+        content = authoring.from_markdown(f.read(), locale=args.locale)
 
     if not content.get("secrets"):
         print("error: no secrets found. The article needs a '### ' heading per "
@@ -229,16 +231,18 @@ def _check_style(path):
 
     sample = {
         "name": "style-check",
-        "title": "Cinque segreti per una luce che racconta qualcosa",
-        "subtitle": "senza studio, senza flash",
-        "badge": "2 SEGRETI",
+        "title": "Five ways to make light do the talking",
+        "subtitle": "no studio, no flash",
+        "badge": "2 POINTS",
         "secrets": [
-            ["Cerca l'ombra aperta", "Mettiti **all'ombra**: la luce arriva "
-             "morbida e uniforme, e gli occhi smettono di socchiudersi."],
-            ["Esponi per le alte luci", "Scendi di **-0,7 EV**: recuperare "
-             "un'ombra costa poco rumore, una guancia bruciata non si recupera."],
+            ["Find open shade", "Step **into the shade**: the light arrives soft "
+             "and even, and nobody squints into the lens."],
+            ["Expose for the highlights", "Drop **-0.7 EV**. Lifting a shadow "
+             "costs a little noise; a blown highlight is simply gone."],
         ],
-        "cta_q": "Qual è il posto dove torni sempre a fotografare?",
+        "cta_q": "Which place do you keep going back to?",
+        "handle": "@yourhandle",
+        "wordmark": "YOUR BRAND",
     }
     images = engine.render_deck(style, sample)
     for i, im in enumerate(images, start=1):

@@ -6,9 +6,11 @@ Trasforma un testo in un carosello Instagram finito — 1080×1350, copertina pi
 una slide per punto più la call to action, pronto da pubblicare.
 
 Un deck sono due file JSON: **cosa dice** e **come appare**. Nessun aspetto
-grafico è scritto nel codice. Palette, scala tipografica e la ricetta di disegno
+grafico è scritto nel codice: palette, scala tipografica e la ricetta di disegno
 di ogni slide vivono nei dati, quindi uno stile nuovo è un file JSON, non una
-modifica al codice.
+modifica al codice. Vale anche per lingua e brand: le parole che uno stile
+disegna intorno al tuo testo stanno in un file di lingua, e handle e wordmark
+arrivano dal deck.
 
 ```
 content.json ──┐
@@ -66,18 +68,21 @@ Tre strade, dalla più comoda.
 
 ### Da un articolo che hai già scritto
 
-Il template del blog post in [docs/USER-GUIDE.md](docs/USER-GUIDE.md) ha la
-stessa forma del deck, quindi si converte direttamente:
+Un post lungo si converte direttamente, se è strutturato come titolo, punti
+numerati e domanda finale:
 
 ```bash
 carousel import articolo.md
 ```
 
 `# Titolo` diventa la copertina, la riga sotto il sottotitolo, ogni `### …` un
-segreto con il suo paragrafo come corpo, e la prima riga della sezione di
-chiusura la call to action. L'introduzione e la riga `Fonti:` vengono ignorate:
-servono a chi scrive, non finiscono in slide. Badge, nome della cartella e un
-prompt immagine di partenza per ogni slide vengono ricavati da soli.
+punto con il suo paragrafo come corpo, e la prima riga della sezione di chiusura
+la call to action. L'introduzione e la riga `Fonti:` vengono ignorate: servono a
+chi scrive, non finiscono in slide. Badge, nome della cartella e un prompt
+immagine di partenza per ogni slide vengono ricavati da soli.
+
+Un esempio completo di quel template e del flusso editoriale da cui nasce è in
+[examples/scintilla-visiva/](examples/scintilla-visiva/).
 
 ### Rispondendo a delle domande
 
@@ -93,6 +98,10 @@ una riga sfora il budget della sua slide *prima* che tu ci costruisca sopra.
 ```json
 {
   "name": "luce-naturale-ritratti",
+  "locale": "it",
+  "handle": "@iltuohandle",
+  "wordmark": "IL TUO BRAND",
+
   "title": "4 segreti per ritratti in luce naturale",
   "subtitle": "senza flash, senza pannelli",
   "badge": "4 SEGRETI",
@@ -100,7 +109,7 @@ una riga sfora il budget della sua slide *prima* che tu ci costruisca sopra.
     ["Cerca l'ombra, non il sole", "Mettiti **all'ombra aperta**: la luce arriva morbida."]
   ],
   "cta_q": "Qual è il posto dove torni sempre a fotografare?",
-  "image_prompts": ["<copertina>", "<segreto 1>", "…", "<cta>"],
+  "image_prompts": ["<copertina>", "<punto 1>", "…", "<cta>"],
   "caption": "<caption Instagram completa>"
 }
 ```
@@ -108,7 +117,7 @@ una riga sfora il budget della sua slide *prima* che tu ci costruisca sopra.
 `secrets[]` comanda tutto il deck: **N segreti → N+2 slide** (copertina +
 segreti + CTA), e `image_prompts[]` corrisponde 1:1 a quelle slide. Il corpo dei
 segreti supporta il markup `**grassetto**`. Un esempio completo è in
-[example/](example/content.json).
+[examples/starter/](examples/starter/content.json).
 
 ### Budget di lunghezza
 
@@ -124,6 +133,34 @@ numero di prompt o un badge che non torna prima di renderizzare.
 | ogni corpo | 240 caratteri |
 | `cta_q` | 14 parole |
 | `secrets` | massimo 8 — Instagram si ferma a 10 slide |
+
+---
+
+## Lingua e brand
+
+Ogni stile disegna qualche parola fissa intorno al tuo testo: l'invito a
+scorrere, la riga del salva, l'etichetta sopra ogni punto. Stanno in
+`carousel/locales/`, non dentro gli stili, così un solo file cambia lingua a
+tutti e sette insieme.
+
+```json
+{ "locale": "it" }
+```
+
+Inglese e italiano sono già inclusi. Per aggiungere una lingua copia
+`carousel/locales/en.json`, traduci i valori e tieni tutte le chiavi: ogni stile
+la parla subito. Un deck può anche scavalcare una singola stringa senza creare un
+file nuovo:
+
+```json
+{ "locale": "it", "strings": { "save": "Salvalo per dopo" } }
+```
+
+Il brand funziona allo stesso modo. `handle` e `wordmark` nel deck sono quello
+che lo stile stampa come firma: impostali per deck quando la stessa
+installazione serve più clienti, oppure una volta sola in `carousel/config.py` se
+hai un brand solo. Se non imposti né l'uno né l'altro, quelle firme non vengono
+disegnate e il deck resta pulito.
 
 ---
 
@@ -254,19 +291,17 @@ il file finito in `carousel/styles/` e compare subito in `carousel styles`.
 
 ---
 
-## Cambiare brand
+## Farlo tuo
 
-Tutto quello che è specifico del brand sta in due posti:
+| Cosa | Dove |
+|------|------|
+| Handle e wordmark | `handle` / `wordmark` nel deck, oppure `carousel/config.py` se hai un brand solo |
+| Look degli sfondi generati | `IMAGE_STYLE` in `carousel/config.py` — la frase che ogni prompt generato porta con sé, ed è ciò che tiene coerente il deck da una slide all'altra |
+| Le parole sulle slide | `carousel/locales/<lingua>.json` |
+| I caratteri | metti un TTF in `fonts/`; il nome del file in minuscolo diventa la famiglia che uno stile richiama |
+| Il look vero e proprio | un file nuovo in `carousel/styles/` |
 
-- **`carousel/config.py`** — `HANDLE`, `WORDMARK` e `IMAGE_STYLE` (il look di
-  base che ogni prompt immagine generato porta con sé, ed è ciò che tiene un deck
-  coerente da una slide all'altra).
-- **`fonts/`** — mettici dentro qualsiasi TTF. Il nome del file in minuscolo
-  diventa il nome della famiglia che uno stile può richiamare: `Inter.ttf` →
-  `inter`, `SpaceMono-Bold.ttf` → famiglia `spacemono`, variante `bold`.
-
-Anche un singolo deck può scavalcare il brand: `content.json` può portarsi
-`handle` e `wordmark` propri.
+Niente di tutto questo richiede di toccare Python.
 
 ---
 
@@ -283,6 +318,7 @@ carousel/
   ops/            le primitive di disegno che gli stili richiamano
   deck.py         lettura/scrittura content.json, validazione, nomi cartelle
   authoring.py    markdown -> deck, procedura guidata, budget di lunghezza
+  locales.py      i testi fissi delle slide, per lingua
   render.py       orchestrazione
   compose.py      slide + sfondi -> JPEG finali
   images.py       generazione degli sfondi
@@ -300,8 +336,18 @@ tests/
 python -m unittest discover tests
 ```
 
-Coprono ogni stile incluso mentre rende un deck completo, la sandbox delle
-espressioni, la validazione dei deck e i budget di lunghezza, l'import da
-markdown, la risoluzione dei font, il testo vuoto (outline) e la pulizia delle
-slide orfane che impedisce a uno `slide_09.png` rimasto indietro di finire in un
-post dopo che il deck ha perso un segreto.
+Coprono ogni stile incluso mentre rende un deck completo in ogni lingua inclusa,
+la sandbox delle espressioni, la validazione dei deck e i budget di lunghezza,
+l'import da markdown, la risoluzione dei font, il testo vuoto (outline), i deck
+senza brand e la pulizia delle slide orfane che impedisce a uno `slide_09.png`
+rimasto indietro di finire in un post dopo che il deck ha perso un punto. Un test
+fa fallire la build se uno stile scrive a mano una parola che doveva arrivare da
+un file di lingua.
+
+## Licenza
+
+MIT — vedi [LICENSE](LICENSE). I caratteri inclusi non rientrano in questa
+licenza: sono sotto SIL Open Font License 1.1, documentata in
+[fonts/README.md](fonts/README.md).
+
+I contributi sono benvenuti — [CONTRIBUTING.md](CONTRIBUTING.md).

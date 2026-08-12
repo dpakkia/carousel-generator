@@ -6,8 +6,10 @@ Turns a piece of writing into a finished Instagram carousel — 1080×1350, cove
 plus one slide per point plus a call to action, ready to post.
 
 A deck is two JSON files: **what it says** and **how it looks**. Nothing about a
-look is hardcoded. Palettes, type scales and the drawing recipe for every slide
-all live in data, so a new style is a JSON file, not a code change.
+look is hardcoded — palettes, type scales and the drawing recipe for every slide
+all live in data, so a new style is a JSON file, not a code change. The same is
+true of language and brand: the words a style draws around your copy come from a
+locale file, and the handle and wordmark come from the deck.
 
 ```
 content.json ──┐
@@ -65,18 +67,21 @@ Three ways, easiest first.
 
 ### From an article you already wrote
 
-The blog-post template in [docs/USER-GUIDE.md](docs/USER-GUIDE.md) is shaped like
-the deck, so it converts directly:
+A long-form post converts directly if it is structured as a title, numbered
+points and a closing question:
 
 ```bash
 carousel import article.md
 ```
 
 `# Title` becomes the cover, the line under it the subtitle, every `### …` a
-secret with its paragraph as the body, and the closing section's first line the
-call to action. Intro copy and the `Fonti:` line are ignored — they are context
-for the writer, not slides. The badge, the folder name and a starting-point
-image prompt per slide are derived for you.
+point with its paragraph as the body, and the closing section's first line the
+call to action. Intro copy and a trailing `Sources:` line are ignored — they are
+context for the writer, not slides. The badge, the folder name and a
+starting-point image prompt per slide are derived for you.
+
+A worked example of that writing template, and of the editorial workflow it came
+from, is in [examples/scintilla-visiva/](examples/scintilla-visiva/).
 
 ### By answering questions
 
@@ -91,22 +96,26 @@ when a line is over budget for its slide *before* you commit to it.
 
 ```json
 {
-  "name": "luce-naturale-ritratti",
-  "title": "4 segreti per ritratti in luce naturale",
-  "subtitle": "senza flash, senza pannelli",
-  "badge": "4 SEGRETI",
+  "name": "natural-light-portraits",
+  "locale": "en",
+  "handle": "@yourhandle",
+  "wordmark": "YOUR BRAND",
+
+  "title": "4 ways to shoot portraits in natural light",
+  "subtitle": "no flash, no reflectors",
+  "badge": "4 POINTS",
   "secrets": [
-    ["Cerca l'ombra, non il sole", "Mettiti **all'ombra aperta**: la luce arriva morbida."]
+    ["Look for shade, not sun", "Step into **open shade**: the light arrives soft and even."]
   ],
-  "cta_q": "Qual è il posto dove torni sempre a fotografare?",
-  "image_prompts": ["<cover>", "<secret 1>", "…", "<cta>"],
+  "cta_q": "Which place do you keep going back to shoot?",
+  "image_prompts": ["<cover>", "<point 1>", "…", "<cta>"],
   "caption": "<full Instagram caption>"
 }
 ```
 
 `secrets[]` drives the whole deck: **N secrets → N+2 slides** (cover + secrets +
 CTA), and `image_prompts[]` maps 1:1 onto those slides. Body copy supports
-`**bold**` markup. A full worked example is in [example/](example/content.json).
+`**bold**` markup. A full worked example is in [examples/starter/](examples/starter/content.json).
 
 ### Length budgets
 
@@ -122,6 +131,31 @@ prompt count or badge number before you render.
 | each body | 240 characters |
 | `cta_q` | 14 words |
 | `secrets` | 8 max — Instagram caps a carousel at 10 slides |
+
+---
+
+## Language and brand
+
+Every style draws a few fixed words around your copy — a swipe cue, a save line,
+the label above each point. Those live in `carousel/locales/`, not in the styles,
+so one file re-languages all seven at once.
+
+```json
+{ "locale": "it" }
+```
+
+English and Italian ship. To add a language, copy `carousel/locales/en.json`,
+translate the values and keep every key — every style speaks it immediately. A
+deck can also override a single string without a new file:
+
+```json
+{ "locale": "en", "strings": { "save": "Pin this for later" } }
+```
+
+Brand works the same way. `handle` and `wordmark` on the deck are what a style
+prints as the account mark; set them per deck when one install serves several
+clients, or once in `carousel/config.py` if you only have one brand. Set neither
+and the marks are simply not drawn — an unbranded deck renders cleanly.
 
 ---
 
@@ -248,19 +282,17 @@ immediately.
 
 ---
 
-## Rebranding
+## Making it yours
 
-Everything brand-specific sits in two places:
+| What | Where |
+|------|-------|
+| Handle and wordmark | `handle` / `wordmark` in the deck, or `carousel/config.py` for a single brand |
+| Look of the generated plates | `IMAGE_STYLE` in `carousel/config.py` — the clause every scaffolded prompt carries, which is what keeps a deck coherent slide to slide |
+| The words on the slides | `carousel/locales/<lang>.json` |
+| Typefaces | drop a TTF in `fonts/`; its lowercased stem becomes the family name a style references |
+| The look itself | a new file in `carousel/styles/` |
 
-- **`carousel/config.py`** — `HANDLE`, `WORDMARK`, and `IMAGE_STYLE` (the house
-  look every scaffolded image prompt carries, which is what keeps a deck
-  coherent slide to slide).
-- **`fonts/`** — drop in any TTF. Its lowercased filename stem becomes a family
-  name a style can reference: `Inter.ttf` → `inter`, `SpaceMono-Bold.ttf` →
-  family `spacemono`, variant `bold`.
-
-A single deck can also override the brand: `content.json` may carry its own
-`handle` and `wordmark`.
+Nothing above requires touching Python.
 
 ---
 
@@ -277,6 +309,7 @@ carousel/
   ops/            the drawing primitives styles call
   deck.py         content.json I/O, validation, folder naming
   authoring.py    markdown -> deck, the guided wizard, length budgets
+  locales.py      the slide chrome, by language
   render.py       orchestration
   compose.py      slides + plates -> final JPEGs
   images.py       background plate generation
@@ -294,7 +327,17 @@ tests/
 python -m unittest discover tests
 ```
 
-Covers every shipped style rendering a full deck, the expression sandbox, deck
-validation and length budgets, markdown import, font resolution, hollow type,
-and the stale-slide pruning that stops an orphaned `slide_09.png` from being
-posted after a deck loses a secret.
+Covers every shipped style rendering a full deck in every shipped language, the
+expression sandbox, deck validation and length budgets, markdown import, font
+resolution, hollow type, unbranded decks, and the stale-slide pruning that stops
+an orphaned `slide_09.png` from being posted after a deck loses a point. One
+test fails the build if a style hardcodes a word that should have come from a
+locale.
+
+## Licence
+
+MIT — see [LICENSE](LICENSE). The bundled typefaces are not covered by it: they
+are under the SIL Open Font License 1.1, documented in
+[fonts/README.md](fonts/README.md).
+
+Contributions welcome — [CONTRIBUTING.md](CONTRIBUTING.md).

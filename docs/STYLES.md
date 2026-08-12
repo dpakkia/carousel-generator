@@ -141,10 +141,47 @@ callable; nothing else is.
 ### Text slots
 
 `value` may be a literal, `"$field"` for a deck field verbatim (keeping its
-`**bold**` markup), or a `"{field}"` template with format specs:
+`**bold**` markup), or a `"{field}"` template with format specs.
 
-`$title` · `$subtitle` · `$badge` · `$headline` · `$body` · `$question` ·
-`$handle` · `$wordmark` · `{index:02d}` · `{count:02d}` · `{slide}` · `{total}`
+**From the deck's copy:**
+`$title` · `$subtitle` · `$badge` · `$headline` · `$body` · `$question`
+
+**From the brand:** `$handle` · `$wordmark` — empty when the deck sets neither,
+and a text op with nothing to draw simply draws nothing, so an unbranded deck
+renders cleanly rather than printing a placeholder.
+
+**Counters:** `{index:02d}` · `{count:02d}` · `{slide}` · `{total}`
+
+**Chrome, from the deck's language** (see below):
+`$scroll` · `$scroll_caps` · `$scroll_plain` · `$continue` · `$save` ·
+`$save_caps` · `$follow` · `$follow_caps` · `$section` · `{figure}` ·
+`{number_abbr}` · `$focus_lock`
+
+### Chrome and language
+
+The fixed words a style draws around the copy — "Swipe →", "Follow @you", the
+label above each point — are neither look nor content, so they live in
+`carousel/locales/<lang>.json` and a recipe references them by name:
+
+```json
+{ "op": "text", "value": "$scroll", "type": "cue", "align": "right" }
+```
+
+**Never write those words as literals in a recipe.** A hardcoded "Swipe →" is
+invisible to translation and silently pins your style to one language; a test
+fails the build if one appears. Everything else — a deck's title, an arrow
+glyph, a format string like `4:5 · 1080×1350` — is fine as a literal.
+
+A deck chooses its language with `"locale": "it"`, and can override any single
+string without a new locale file:
+
+```json
+{ "locale": "en", "strings": { "save": "Pin this for later" } }
+```
+
+Strings may interpolate the brand: `"follow": "Follow {handle}"` is resolved
+before the recipe sees it. To add a language, copy `en.json`, translate the
+values, and keep every key.
 
 ### Flow
 
