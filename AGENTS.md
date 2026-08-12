@@ -74,6 +74,10 @@ Requirements for a style to be considered done:
 
 ---
 
+**Picking the style.** If the brand rotates looks across a series, use
+`--style auto` rather than choosing by hand — it derives the style from the deck
+number and prints what it picked. `carousel styles --rotation` shows the mapping.
+
 ## Task: write deck copy
 
 The schema is in `README.md`; `examples/scintilla-visiva/INSTRUCTIONS.md` is a

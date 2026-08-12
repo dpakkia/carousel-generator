@@ -1,6 +1,7 @@
 """Command line entry point.
 
     carousel render content.json --style v3     copy  -> slide_*.png
+    carousel render content.json --style auto   rotate the look by deck number
     carousel plates decks/TODO-01-x             prompts -> bg_*.png
     carousel compose decks/TODO-01-x            slides + plates -> final_*.jpg
     carousel build content.json --style v3      render, plates, compose
@@ -26,7 +27,7 @@ from . import images as images_mod
 from . import ops
 from . import authoring
 from . import reindex as reindex_mod
-from .style import Style, available, StyleError
+from .style import Style, available, rotate, rotation_table, StyleError
 
 
 def main(argv=None):
@@ -36,7 +37,9 @@ def main(argv=None):
 
     p = sub.add_parser("render", help="render slide overlays from a content.json")
     p.add_argument("content")
-    p.add_argument("--style", "-s", default="v1", help="style name or path (default: v1)")
+    p.add_argument("--style", "-s", default="v1",
+                   help="style name or path, or \"auto\" to rotate by deck number "
+                        "(default: v1)")
     p.add_argument("--out", "-o", help="render into this existing deck folder (re-skin)")
     p.add_argument("--root", default="decks", help="where new deck folders are created")
     p.add_argument("--no-prune", action="store_true",
@@ -58,7 +61,8 @@ def main(argv=None):
 
     p = sub.add_parser("build", help="render, generate missing plates, then compose")
     p.add_argument("content")
-    p.add_argument("--style", "-s", default="v1")
+    p.add_argument("--style", "-s", default="v1",
+                   help="style name or path, or \"auto\" to rotate by deck number")
     p.add_argument("--out", "-o")
     p.add_argument("--root", default="decks")
     p.add_argument("--no-plates", action="store_true", help="skip plate generation")
@@ -101,6 +105,8 @@ def main(argv=None):
 
     p = sub.add_parser("styles", help="list the available styles")
     p.add_argument("--ops", action="store_true", help="also list the drawing ops")
+    p.add_argument("--rotation", action="store_true",
+                   help="show which style each deck number rotates to")
     p.add_argument("--check", metavar="PATH",
                    help="validate a style file (e.g. one an AI wrote) by rendering it")
     p.set_defaults(func=cmd_styles)
@@ -128,8 +134,9 @@ def main(argv=None):
 def cmd_render(args):
     content = deck_io.load(args.content)
     _warn(content)
+    style = resolve_style(args.style, args.out, os.path.abspath(args.root))
     folder, paths, removed = render_mod.build(
-        content, args.style, out_folder=args.out,
+        content, style, out_folder=args.out,
         root=os.path.abspath(args.root), prune=not args.no_prune)
     for p in removed:
         print(f"removed stale {os.path.basename(p)}")
@@ -161,7 +168,8 @@ def cmd_compose(args):
 def cmd_build(args):
     content = deck_io.load(args.content)
     _warn(content)
-    folder, _, _ = render_mod.build(content, args.style, out_folder=args.out,
+    style = resolve_style(args.style, args.out, os.path.abspath(args.root))
+    folder, _, _ = render_mod.build(content, style, out_folder=args.out,
                                     root=os.path.abspath(args.root))
     print(folder)
     if not args.no_plates:
@@ -279,6 +287,28 @@ def _style_or_none(name):
     return Style.load(name) if name else None
 
 
+def resolve_style(name, out_folder=None, root=None, announce=True):
+    """Turn a --style value into a style name, expanding "auto".
+
+    "auto" rotates by deck number: the number in the target folder when
+    re-rendering one, otherwise the number the next new folder will get.
+    """
+    if name != "auto":
+        return name
+
+    index = deck_io.deck_number(out_folder) if out_folder else None
+    source = f"folder {os.path.basename(os.path.normpath(out_folder))}" if index \
+        else None
+    if index is None:
+        index = deck_io.next_index(root or os.getcwd())
+        source = f"next deck number {index:02d}"
+
+    picked = rotate(index)
+    if announce:
+        print(f"style: {picked} (auto, from {source})")
+    return picked
+
+
 def _write_content(content, path):
     deck_io.save(content, path)
     authoring.summarise(content)
@@ -308,6 +338,11 @@ def cmd_styles(args):
         style = Style.load(name)
         note = style.data.get("meta", {}).get("description", "")
         print(f"{name:6} {style.label:22} {note[:70]}")
+    if args.rotation:
+        print("\nwith --style auto, deck number picks the look:")
+        for number, name in rotation_table():
+            print(f"  {number:02d}  {name}")
+        print("  …then it wraps")
     if args.ops:
         print("\nops available to a style recipe:")
         print("  " + ", ".join(ops.available()))

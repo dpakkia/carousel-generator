@@ -15,7 +15,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from carousel import deck, engine, render, fonts, authoring, locales  # noqa: E402
 from carousel import typography as ty                               # noqa: E402
 from carousel import values                                         # noqa: E402
-from carousel.style import Style, StyleError, available             # noqa: E402
+from carousel.style import (Style, StyleError, available, rotate,    # noqa: E402
+                            rotation_table)                          # noqa: E402
 from carousel.render import prune_stale                             # noqa: E402
 from carousel import reindex as reindex_mod                         # noqa: E402
 
@@ -403,6 +404,47 @@ class TestHollowType(unittest.TestCase):
 def json_dumps(obj):
     import json
     return json.dumps(obj, ensure_ascii=False)
+
+
+class TestRotation(unittest.TestCase):
+    """Consecutive decks must not repeat a look."""
+
+    def test_the_documented_sequence(self):
+        # 01 -> v1 … 07 -> v7, then back to the start
+        for number, expected in [(1, "v1"), (2, "v2"), (7, "v7"),
+                                 (8, "v1"), (9, "v2"), (15, "v1")]:
+            with self.subTest(deck=number):
+                self.assertEqual(rotate(number), expected)
+
+    def test_rotates_over_however_many_styles_exist(self):
+        three = ["a", "b", "c"]
+        self.assertEqual([rotate(n, three) for n in range(1, 8)],
+                         ["a", "b", "c", "a", "b", "c", "a"])
+
+    def test_never_repeats_within_one_cycle(self):
+        picks = [rotate(n) for n in range(1, len(available()) + 1)]
+        self.assertEqual(len(set(picks)), len(picks))
+
+    def test_a_missing_deck_number_is_an_error(self):
+        for bad in (None, 0, -1):
+            with self.subTest(index=bad):
+                with self.assertRaises(StyleError):
+                    rotate(bad)
+
+    def test_no_styles_is_an_error_not_a_crash(self):
+        with self.assertRaises(StyleError):
+            rotate(1, [])
+
+    def test_every_rotated_name_actually_loads(self):
+        for _, name in rotation_table():
+            with self.subTest(style=name):
+                self.assertTrue(Style.load(name).slides)
+
+    def test_rotation_table_covers_the_wrap(self):
+        table = rotation_table()
+        self.assertGreater(len(table), len(available()),
+                           "table should show at least one wrapped deck")
+        self.assertEqual(table[0][1], table[len(available())][1])
 
 
 class TestReindex(unittest.TestCase):

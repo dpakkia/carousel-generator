@@ -177,6 +177,31 @@ def available():
                   if f.endswith(".json") and not f.startswith("_"))
 
 
+def rotate(index, names=None):
+    """The style for deck number `index`, cycling through the available styles.
+
+    Deck 1 gets the first style, deck 2 the second, and the sequence wraps: with
+    seven styles, deck 8 comes back to the first. The point is that consecutive
+    posts never repeat a look, so it rotates over however many styles are
+    installed rather than a fixed cycle — a fork with three styles rotates
+    through three.
+    """
+    names = list(names) if names is not None else available()
+    if not names:
+        raise StyleError(f"no styles to rotate through in {STYLE_DIR}")
+    if index is None or index < 1:
+        raise StyleError(
+            f"cannot rotate to a style without a deck number (got {index!r})")
+    return names[(index - 1) % len(names)]
+
+
+def rotation_table(count=None, names=None):
+    """[(deck number, style name)] for the first `count` decks — for showing."""
+    names = list(names) if names is not None else available()
+    count = count or (len(names) + 2)
+    return [(n, rotate(n, names)) for n in range(1, count + 1)]
+
+
 def merge(base, over):
     """Deep-merge `over` onto `base` for the known section keys."""
     out = copy.deepcopy(base)

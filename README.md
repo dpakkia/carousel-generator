@@ -247,6 +247,27 @@ carousel preview content.json --out preview/
 | `v6` | Luminous Duotone | Blurred jewel-tone wash that blooms with the photo |
 | `v7` | Kinetic Teaching | Viewfinder grid, focus brackets, Space Mono HUD |
 
+### Rotating the look across a series
+
+Posting the same look twice in a row makes a feed look repetitive, so a deck can
+take its style from its own number:
+
+```bash
+carousel render content.json --style auto
+```
+
+Deck 01 gets the first style, 02 the second, and it wraps — with seven styles
+installed, deck 08 returns to the first. The number comes from the target
+folder's name when you re-render one (`TODO-04-…`, `04-TO-POST-…` and `DONE-04-…`
+all work), or from the number the next new deck will get. The chosen style is
+always printed, so it is never a mystery:
+
+```
+style: v4 (auto, from folder TODO-04-natural-light)
+```
+
+`carousel styles --rotation` prints the whole mapping.
+
 `v6` ships three palette variants. A deck picks one with its own `"palette"`
 field, or its name selects one deterministically — so a given deck always renders
 the same colours, while a run of decks cycles through the family.

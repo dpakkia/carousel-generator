@@ -32,7 +32,16 @@ v2, v3, v4, v5, v6, v7, v1   →   style(N) = CYCLE[(N - 2) % 7]
 ```
 
 So `02→v2, 03→v3, 04→v4, 05→v5, 06→v6, 07→v7, 08→v1, 09→v2, 10→v3, 11→v4, …`.
-A **new** deck gets the style for its (new) index; render with `--style` set to it.
+
+This rule is built in — use `--style auto` and the deck number decides:
+
+```
+carousel render content.json --style auto
+```
+
+It reads the number from the target folder when re-rendering one, or from the
+next index for a new deck, and prints which style it chose. `carousel styles
+--rotation` shows the mapping.
 
 To re-skin an existing deck, render into its folder and recompose — the bg
 plates are reused, never regenerated:

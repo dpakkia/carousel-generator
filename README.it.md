@@ -253,6 +253,28 @@ carousel preview content.json --out preview/
 | `v6` | Luminous Duotone | Velatura duotone sfocata che fiorisce insieme alla foto |
 | `v7` | Kinetic Teaching | Griglia da mirino, staffe di fuoco, HUD in Space Mono |
 
+### Ruotare il look lungo una serie
+
+Pubblicare due volte di fila lo stesso look rende il feed ripetitivo, quindi un
+deck può prendere lo stile dal proprio numero:
+
+```bash
+carousel render content.json --style auto
+```
+
+Il deck 01 prende il primo stile, il 02 il secondo, e poi si ricomincia: con
+sette stili installati il deck 08 torna al primo. Il numero arriva dal nome
+della cartella di destinazione quando ne ri-renderizzi una (`TODO-04-…`,
+`04-TO-POST-…` e `DONE-04-…` funzionano tutti), altrimenti dal numero che avrà
+il prossimo deck nuovo. Lo stile scelto viene sempre stampato, così non è mai un
+mistero:
+
+```
+style: v4 (auto, from folder TODO-04-natural-light)
+```
+
+`carousel styles --rotation` mostra tutta la mappatura.
+
 `v6` include tre varianti di palette. Un deck ne sceglie una con il proprio campo
 `"palette"`, oppure la sceglie il suo nome in modo deterministico: così un deck
 rende sempre con gli stessi colori, mentre una serie di deck ruota nella
