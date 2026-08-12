@@ -140,11 +140,18 @@ actual scene, and only the subject:
 3. Preserve `**bold**` markup and the deck's `locale`, `handle`, `wordmark`.
 4. Re-validate and re-render.
 
-**Changing the number of secrets shifts every index after it.** `validate()`
-detects the resulting `image_prompts` mismatch and reports the offset, but does
-not repair it, and background plates are named by slide number. Adding a secret
-in the middle means the plates after it now sit behind the wrong copy. Fix the
-mapping deliberately; do not regenerate the whole set to paper over it.
+**Changing the number or order of points misaligns the background plates.**
+Plates are named by slide position, so inserting a point mid-deck leaves every
+later plate behind the wrong copy — and `check` stays quiet about it, because
+nothing in a JSON file can see that plate 4 was shot for what is now slide 5.
+
+Repair it with `carousel reindex <folder>`, **before re-rendering** — it reads
+`deck.txt`, which a render overwrites. Preview with `--dry-run` first. It
+handles reorders as well as shifts, never overwrites a plate, and sets the plate
+of a deleted point aside as `orphan_NN.png`.
+
+Do not regenerate the whole set to paper over a shift. That spends money to
+destroy art direction you already had.
 
 ---
 
@@ -152,7 +159,9 @@ mapping deliberately; do not regenerate the whole set to paper over it.
 
 - **Never regenerate a background plate that already exists** unless explicitly
   asked. They cost money and are art-directed. `carousel plates` refuses by
-  default; do not reach for `--force` to save yourself a thought.
+  default; do not reach for `--force` to save yourself a thought. If plates look
+  wrong after an edit, suspect misalignment and run `carousel reindex` before
+  concluding they need re-shooting.
 - **Never hardcode slide chrome in a style.** It goes in `carousel/locales/`.
 - **Never edit `deck.txt`.** It is regenerated from `content.json` on every
   render. Edit the source.

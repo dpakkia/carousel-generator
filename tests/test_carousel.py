@@ -4,6 +4,8 @@ Run with:  python -m unittest discover tests     (or: pytest)
 """
 import os
 import sys
+import glob
+import json
 import shutil
 import tempfile
 import unittest
@@ -15,6 +17,7 @@ from carousel import typography as ty                               # noqa: E402
 from carousel import values                                         # noqa: E402
 from carousel.style import Style, StyleError, available             # noqa: E402
 from carousel.render import prune_stale                             # noqa: E402
+from carousel import reindex as reindex_mod                         # noqa: E402
 
 DECK = {
     "name": "test-deck",
@@ -400,6 +403,105 @@ class TestHollowType(unittest.TestCase):
 def json_dumps(obj):
     import json
     return json.dumps(obj, ensure_ascii=False)
+
+
+class TestReindex(unittest.TestCase):
+    """Plates are named by slide position, so changing a deck's shape
+    misaligns them. validate() cannot see it once the prompt count is kept in
+    sync, which is exactly when it is most dangerous."""
+
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+        self.folder, _, _ = render.build(DECK, "v1", root=self.tmp)
+        # a stand-in plate per slide, tagged with the slide it was made for
+        from PIL import Image
+        for n in range(1, deck.total_slides(DECK) + 1):
+            Image.new("RGB", (4, 4), (n * 10, 0, 0)).save(
+                os.path.join(self.folder, f"bg_{n:02d}.png"))
+
+    def tearDown(self):
+        shutil.rmtree(self.tmp, ignore_errors=True)
+
+    def made_for(self, slide):
+        """Which slide the plate now at `slide` was originally generated for."""
+        from PIL import Image
+        path = os.path.join(self.folder, f"bg_{slide:02d}.png")
+        return Image.open(path).getpixel((0, 0))[0] // 10
+
+    def insert_point(self, at=1):
+        """Add a point with the bookkeeping done correctly throughout."""
+        c = json.loads(json.dumps(DECK))
+        c["secrets"].insert(at, ["Brand new point", "with a brand new body"])
+        c["image_prompts"].insert(at + 1, "a new prompt")
+        c["badge"] = f"{len(c['secrets'])} SEGRETI"
+        return c
+
+    def test_the_silent_case_passes_validation(self):
+        """The trap: every check satisfied, every later plate still wrong.
+
+        validate() catches a stale prompt count or badge. It cannot see plate
+        alignment, so doing the bookkeeping properly is what makes this
+        dangerous rather than what makes it safe.
+        """
+        shifted = self.insert_point()
+        self.assertEqual(deck.validate(shifted), [])
+        plan = reindex_mod.build_plan(self.folder, shifted)
+        self.assertTrue(plan.moves, "validation was clean but plates are misaligned")
+
+    def test_insertion_shifts_every_later_plate(self):
+        plan = reindex_mod.build_plan(self.folder, self.insert_point())
+        self.assertEqual([(o, n) for o, n, _ in plan.moves],
+                         [(3, 4), (4, 5), (5, 6)])
+        self.assertEqual(plan.unchanged, [1, 2])
+        self.assertEqual(plan.missing, [3])
+
+    def test_applying_puts_every_plate_behind_its_own_copy(self):
+        plan = reindex_mod.build_plan(self.folder, self.insert_point())
+        reindex_mod.apply_plan(plan)
+        for new_slide, original in ((1, 1), (2, 2), (4, 3), (5, 4), (6, 5)):
+            self.assertEqual(self.made_for(new_slide), original,
+                             f"bg_{new_slide:02d} holds the wrong plate")
+
+    def test_a_reorder_is_handled_not_just_a_shift(self):
+        """Renaming in one pass would clobber; staging through temps does not."""
+        c = json.loads(json.dumps(DECK))
+        c["secrets"] = [c["secrets"][2], c["secrets"][1], c["secrets"][0]]
+        plan = reindex_mod.build_plan(self.folder, c)
+        reindex_mod.apply_plan(plan)
+        self.assertEqual([self.made_for(n) for n in (2, 3, 4)], [4, 3, 2])
+
+    def test_deleting_a_point_sets_its_plate_aside_rather_than_losing_it(self):
+        c = json.loads(json.dumps(DECK))
+        removed = c["secrets"].pop(0)
+        plan = reindex_mod.build_plan(self.folder, c)
+        self.assertEqual([o for o, _ in plan.orphans], [2])
+        reindex_mod.apply_plan(plan)
+        self.assertTrue(os.path.isfile(
+            os.path.join(self.folder, "orphan_02.png")), "orphan was deleted")
+        self.assertEqual(self.made_for(2), 3, "later plates should shift down")
+
+    def test_no_temp_files_survive(self):
+        plan = reindex_mod.build_plan(self.folder, self.insert_point())
+        reindex_mod.apply_plan(plan)
+        self.assertEqual(glob.glob(os.path.join(self.folder, ".reindex_*")), [])
+
+    def test_unchanged_deck_is_a_no_op(self):
+        plan = reindex_mod.build_plan(self.folder, DECK)
+        self.assertFalse(plan.changed)
+        self.assertEqual(reindex_mod.apply_plan(plan), [])
+
+    def test_matching_ignores_markup_and_punctuation(self):
+        c = json.loads(json.dumps(DECK))
+        c["secrets"][0][0] = "**Cerca** l'ombra!"       # was "Cerca l'ombra"
+        plan = reindex_mod.build_plan(self.folder, c)
+        self.assertFalse(plan.orphans, "reworded headline should still match")
+        self.assertFalse(plan.changed)
+
+    def test_missing_deck_txt_is_explained(self):
+        os.remove(os.path.join(self.folder, "deck.txt"))
+        with self.assertRaises(reindex_mod.ReindexError) as ctx:
+            reindex_mod.build_plan(self.folder, DECK)
+        self.assertIn("--from", str(ctx.exception))
 
 
 class TestExampleDeck(unittest.TestCase):

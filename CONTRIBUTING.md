@@ -63,6 +63,13 @@ Document it in the op reference table in `docs/STYLES.md`.
 Only add a font you are allowed to redistribute, and record its licence in
 `fonts/README.md`. Most commercial font licences forbid bundling.
 
+## Deck-shape changes
+
+`carousel/reindex.py` exists because slides are numbered positionally while
+plates are files named after those positions. If you touch slide numbering,
+naming, or `deck.txt`, re-read it — `deck.txt` is the only record of the shape a
+folder's plates were generated for.
+
 ## Tests
 
 New behaviour needs a test. Aim them at what would actually break a deck —

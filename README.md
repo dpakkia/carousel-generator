@@ -194,6 +194,29 @@ Two behaviours worth knowing:
 Composing writes JPEG, not PNG, on purpose: Instagram's Graph API rejects PNG
 uploads with error `2207032`.
 
+### Changing a deck's shape
+
+Slides are numbered by position and a plate is a file named after a position, so
+adding or removing a point mid-deck leaves every later `bg_NN.png` behind the
+wrong copy. Worse, it does so *quietly*: keep `image_prompts` and the badge in
+sync and `check` reports nothing, because nothing in a JSON file can see that
+plate 4 was shot for what is now slide 5.
+
+`reindex` repairs the mapping. Run it **before re-rendering** — it reads the
+deck's `deck.txt`, which still describes the shape the plates were made for
+until a render overwrites it:
+
+```bash
+carousel reindex decks/TODO-04-x --dry-run   # show the mapping
+carousel reindex decks/TODO-04-x             # rename in a safe order
+carousel plates  decks/TODO-04-x --only 3    # generate only what's genuinely new
+```
+
+It matches plates to slides by headline, so it handles a reorder as well as a
+shift, and renames via temporary files so no plate can overwrite another. A
+plate whose point you deleted is renamed `orphan_NN.png` rather than removed —
+plates cost money, and you may want it back.
+
 ### Re-skinning a finished deck
 
 Render into the deck's own folder and recompose. The plates are reused, not
@@ -325,6 +348,7 @@ carousel/
   deck.py         content.json I/O, validation, folder naming
   authoring.py    markdown -> deck, the guided wizard, length budgets
   locales.py      the slide chrome, by language
+  reindex.py      realigns plates when a deck gains, loses or reorders a point
   render.py       orchestration
   compose.py      slides + plates -> final JPEGs
   images.py       background plate generation

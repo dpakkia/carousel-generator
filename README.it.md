@@ -199,6 +199,30 @@ Due comportamenti da tenere a mente:
 `compose` scrive JPEG e non PNG di proposito: le Graph API di Instagram rifiutano
 i PNG con l'errore `2207032`.
 
+### Quando il deck cambia forma
+
+Le slide sono numerate per posizione e uno sfondo è un file che porta quel
+numero: aggiungere o togliere un punto a metà deck lascia ogni `bg_NN.png`
+successivo dietro al testo sbagliato. E lo fa *in silenzio*: se tieni allineati
+`image_prompts` e il badge, `check` non segnala nulla, perché nessun file JSON
+può accorgersi che lo sfondo 4 era stato fatto per quella che adesso è la slide
+5.
+
+`reindex` rimette a posto la corrispondenza. Eseguilo **prima di ri-renderizzare**:
+legge il `deck.txt` del deck, che descrive ancora la forma per cui gli sfondi
+erano stati creati finché un render non lo riscrive.
+
+```bash
+carousel reindex decks/TODO-04-x --dry-run   # mostra la mappatura
+carousel reindex decks/TODO-04-x             # rinomina in ordine sicuro
+carousel plates  decks/TODO-04-x --only 3    # genera solo quello davvero nuovo
+```
+
+Associa sfondi e slide per headline, quindi gestisce anche un riordino e non
+solo uno scorrimento, e rinomina passando da file temporanei: nessuno sfondo può
+sovrascriverne un altro. Lo sfondo di un punto che hai cancellato diventa
+`orphan_NN.png` invece di sparire — gli sfondi costano, e potresti rivolerlo.
+
 ### Cambiare stile a un deck già fatto
 
 Renderizza dentro la cartella del deck e ricomponi. Gli sfondi vengono riusati,
@@ -335,6 +359,7 @@ carousel/
   deck.py         lettura/scrittura content.json, validazione, nomi cartelle
   authoring.py    markdown -> deck, procedura guidata, budget di lunghezza
   locales.py      i testi fissi delle slide, per lingua
+  reindex.py      riallinea gli sfondi quando il deck cambia forma
   render.py       orchestrazione
   compose.py      slide + sfondi -> JPEG finali
   images.py       generazione degli sfondi

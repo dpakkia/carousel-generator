@@ -6,6 +6,7 @@
     carousel build content.json --style v3      render, plates, compose
     carousel new                                answer questions -> content.json
     carousel import article.md                  blog post -> content.json
+    carousel reindex decks/TODO-01-x            realign plates after a shape change
     carousel styles                             what looks are available
     carousel styles --check my-brand.json       validate a style you were handed
     carousel check content.json                 validate a deck before rendering
@@ -24,6 +25,7 @@ from . import compose as compose_mod
 from . import images as images_mod
 from . import ops
 from . import authoring
+from . import reindex as reindex_mod
 from .style import Style, available, StyleError
 
 
@@ -79,6 +81,18 @@ def main(argv=None):
     p.add_argument("--style", "-s", help="art-direct the image prompts for this style")
     p.set_defaults(func=cmd_import)
 
+    p = sub.add_parser("reindex",
+                       help="realign background plates after a deck gains or loses a point")
+    p.add_argument("folder")
+    p.add_argument("--content", help="content.json (default: the folder's own)")
+    p.add_argument("--from", dest="from_content", metavar="OLD",
+                   help="an old content.json describing the shape the plates were made for "
+                        "(default: read it from the folder's deck.txt)")
+    p.add_argument("--dry-run", action="store_true", help="show the mapping, change nothing")
+    p.add_argument("--force", action="store_true",
+                   help="overwrite plates that are not part of the mapping")
+    p.set_defaults(func=cmd_reindex)
+
     p = sub.add_parser("prompts", help="rewrite a deck's image prompts for a style")
     p.add_argument("content")
     p.add_argument("--style", "-s", help="take the art direction from this style")
@@ -104,7 +118,8 @@ def main(argv=None):
     args = parser.parse_args(argv)
     try:
         return args.func(args) or 0
-    except (StyleError, images_mod.ImageError, FileNotFoundError) as e:
+    except (StyleError, images_mod.ImageError, reindex_mod.ReindexError,
+            FileNotFoundError) as e:
         print(f"error: {e}", file=sys.stderr)
         return 1
 
@@ -190,6 +205,47 @@ def cmd_import(args):
         content["image_prompts"] = authoring.scaffold_prompts(
             content, _style_or_none(args.style))
     return _write_content(content, args.out)
+
+
+def cmd_reindex(args):
+    """Renumber plates to match the deck's current shape.
+
+    Run this *before* re-rendering: deck.txt is the record of the shape the
+    plates were generated for, and rendering overwrites it.
+    """
+    folder = args.folder
+    content = deck_io.load(args.content or os.path.join(folder, "content.json"))
+
+    old_labels = None
+    if args.from_content:
+        old_labels = reindex_mod.labels_from_content(deck_io.load(args.from_content))
+    plan = reindex_mod.build_plan(folder, content, old_labels)
+
+    print(f"{folder}")
+    plan.describe()
+
+    if not plan.changed:
+        print("\nplates already line up with the deck — nothing to do")
+        if plan.missing:
+            print("generate the missing ones with: "
+                  f"carousel plates {folder} --only "
+                  f"{','.join(str(n) for n in plan.missing)}")
+        return 0
+
+    if args.dry_run:
+        print("\ndry run — nothing moved")
+        return 0
+
+    done = reindex_mod.apply_plan(plan, force=args.force)
+    print(f"\n{len(done)} plates renamed")
+    if plan.missing:
+        print("now generate the new ones:")
+        print(f"  carousel plates {folder} --only "
+              f"{','.join(str(n) for n in plan.missing)}")
+    print("then re-render and recompose:")
+    print(f"  carousel render {os.path.join(folder, 'content.json')} --out {folder}")
+    print(f"  carousel compose {folder}")
+    return 0
 
 
 def cmd_prompts(args):
