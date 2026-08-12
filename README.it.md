@@ -357,8 +357,11 @@ un file di lingua.
 
 ## Licenza
 
-MIT — vedi [LICENSE](LICENSE). I caratteri inclusi non rientrano in questa
-licenza: sono sotto SIL Open Font License 1.1, documentata in
+MIT — vedi [LICENSE](LICENSE).
+
+I caratteri inclusi **non** rientrano in questa licenza. Inter, Fraunces e Space
+Mono sono sotto SIL Open Font License 1.1: il testo della licenza è in
+[fonts/OFL.txt](fonts/OFL.txt) e il copyright di ogni famiglia in
 [fonts/README.md](fonts/README.md).
 
 I contributi sono benvenuti — [CONTRIBUTING.md](CONTRIBUTING.md).

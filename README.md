@@ -347,8 +347,11 @@ locale.
 
 ## Licence
 
-MIT — see [LICENSE](LICENSE). The bundled typefaces are not covered by it: they
-are under the SIL Open Font License 1.1, documented in
+MIT — see [LICENSE](LICENSE).
+
+The bundled typefaces are **not** covered by it. Inter, Fraunces and Space Mono
+are each under the SIL Open Font License 1.1; the licence text is in
+[fonts/OFL.txt](fonts/OFL.txt) and the per-family copyright in
 [fonts/README.md](fonts/README.md).
 
 Contributions welcome — [CONTRIBUTING.md](CONTRIBUTING.md).
