@@ -27,6 +27,13 @@ DEJAVU_BOLD = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
 HANDLE = "@scintillavisiva"
 WORDMARK = "SCINTILLA VISIVA"
 
+# The house look for generated background plates. Every scaffolded image prompt
+# carries this clause, which is what keeps a deck visually coherent slide to
+# slide — rewrite it here to re-art-direct every future deck at once.
+IMAGE_STYLE = ("Cinematic and moody, deep charcoal near-black, warm amber-gold "
+               "forge glow, a subtle cool-teal accent, fine film grain, "
+               "premium editorial photography.")
+
 # Brand ground. Also the fallback plate colour in compose.py when a slide has
 # no bg_NN.png behind it.
 CHARCOAL = (21, 23, 28)

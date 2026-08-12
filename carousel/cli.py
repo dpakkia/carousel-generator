@@ -4,7 +4,10 @@
     carousel plates decks/TODO-01-x             prompts -> bg_*.png
     carousel compose decks/TODO-01-x            slides + plates -> final_*.jpg
     carousel build content.json --style v3      render, plates, compose
+    carousel new                                answer questions -> content.json
+    carousel import article.md                  blog post -> content.json
     carousel styles                             what looks are available
+    carousel styles --check my-brand.json       validate a style you were handed
     carousel check content.json                 validate a deck before rendering
     carousel preview content.json               one contact sheet per style
 
@@ -20,6 +23,7 @@ from . import render as render_mod
 from . import compose as compose_mod
 from . import images as images_mod
 from . import ops
+from . import authoring
 from .style import Style, available, StyleError
 
 
@@ -58,8 +62,23 @@ def main(argv=None):
     p.add_argument("--no-plates", action="store_true", help="skip plate generation")
     p.set_defaults(func=cmd_build)
 
+    p = sub.add_parser("new", help="build a content.json by answering questions")
+    p.add_argument("--out", "-o", default="content.json")
+    p.add_argument("--force", action="store_true", help="overwrite an existing file")
+    p.set_defaults(func=cmd_new)
+
+    p = sub.add_parser("import", help="turn a blog-post markdown file into a content.json")
+    p.add_argument("article")
+    p.add_argument("--out", "-o", default="content.json")
+    p.add_argument("--force", action="store_true", help="overwrite an existing file")
+    p.add_argument("--no-prompts", action="store_true",
+                   help="leave image_prompts empty instead of scaffolding them")
+    p.set_defaults(func=cmd_import)
+
     p = sub.add_parser("styles", help="list the available styles")
     p.add_argument("--ops", action="store_true", help="also list the drawing ops")
+    p.add_argument("--check", metavar="PATH",
+                   help="validate a style file (e.g. one an AI wrote) by rendering it")
     p.set_defaults(func=cmd_styles)
 
     p = sub.add_parser("check", help="validate a content.json")
@@ -131,7 +150,61 @@ def cmd_build(args):
     return 0
 
 
+def cmd_new(args):
+    if os.path.exists(args.out) and not args.force:
+        print(f"error: {args.out} already exists (pass --force to replace it)",
+              file=sys.stderr)
+        return 1
+    try:
+        content = authoring.wizard()
+    except (KeyboardInterrupt, EOFError):
+        print("\naborted — nothing written")
+        return 1
+    return _write_content(content, args.out)
+
+
+def cmd_import(args):
+    if os.path.exists(args.out) and not args.force:
+        print(f"error: {args.out} already exists (pass --force to replace it)",
+              file=sys.stderr)
+        return 1
+    with open(args.article, encoding="utf-8") as f:
+        content = authoring.from_markdown(f.read())
+
+    if not content.get("secrets"):
+        print("error: no secrets found. The article needs a '### ' heading per "
+              "secret — see docs/USER-GUIDE.md for the template.", file=sys.stderr)
+        return 1
+    if not args.no_prompts:
+        content["image_prompts"] = authoring.scaffold_prompts(content)
+    return _write_content(content, args.out)
+
+
+def _write_content(content, path):
+    deck_io.save(content, path)
+    authoring.summarise(content)
+
+    problems = deck_io.validate(content)
+    warnings = authoring.budget_warnings(content)
+    if problems or warnings:
+        print()
+    for p in problems:
+        print(f"problem: {p}")
+    for w in warnings:
+        print(f"warning: {w}")
+
+    print(f"\nwritten to {path}")
+    if not content.get("caption"):
+        print("next: add a caption (see docs/CAPTION.md), then")
+    else:
+        print("next:")
+    print(f"  carousel render {path} --style v1")
+    return 1 if problems else 0
+
+
 def cmd_styles(args):
+    if args.check:
+        return _check_style(args.check)
     for name in available():
         style = Style.load(name)
         note = style.data.get("meta", {}).get("description", "")
@@ -139,6 +212,40 @@ def cmd_styles(args):
     if args.ops:
         print("\nops available to a style recipe:")
         print("  " + ", ".join(ops.available()))
+    return 0
+
+
+def _check_style(path):
+    """Load a style and render every slide kind, reporting the first failure.
+
+    Styles are usually written by an AI from a brand brief, so the useful output
+    is a precise complaint — which slide, which step, which op.
+    """
+    from . import engine
+    style = Style.load(path)
+    print(f"{style.name} — {style.label}")
+    print(f"  {style.width}x{style.height}, margin {style.margin}, "
+          f"{len(style.palette)} colours, {len(style.type_styles)} type styles")
+
+    sample = {
+        "name": "style-check",
+        "title": "Cinque segreti per una luce che racconta qualcosa",
+        "subtitle": "senza studio, senza flash",
+        "badge": "2 SEGRETI",
+        "secrets": [
+            ["Cerca l'ombra aperta", "Mettiti **all'ombra**: la luce arriva "
+             "morbida e uniforme, e gli occhi smettono di socchiudersi."],
+            ["Esponi per le alte luci", "Scendi di **-0,7 EV**: recuperare "
+             "un'ombra costa poco rumore, una guancia bruciata non si recupera."],
+        ],
+        "cta_q": "Qual è il posto dove torni sempre a fotografare?",
+    }
+    images = engine.render_deck(style, sample)
+    for i, im in enumerate(images, start=1):
+        if not im.getbbox():
+            print(f"  slide {i}: rendered completely empty")
+            return 1
+    print(f"  renders {len(images)} slides cleanly")
     return 0
 
 

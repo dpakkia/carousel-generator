@@ -89,11 +89,12 @@ def _run(ctx, spec, style, kind, index):
     params = {k: v for k, v in spec.items() if k not in ("op", "when", "note")}
     try:
         ops.get(spec["op"])(ctx, **params)
-    except StyleError:
-        raise
     except Exception as e:
+        # Always name the failing step: styles are usually authored from a brand
+        # brief by someone who cannot read a Python traceback.
         raise StyleError(
-            f"{style.name}/{kind}[{index}] op {spec['op']!r}: {e}") from e
+            f"{style.name} · {kind} slide · step {index + 1} "
+            f"(op {spec['op']!r}): {e}") from e
 
 
 def slide_data(content, kind, number=None, index=None, count=None, total=None):

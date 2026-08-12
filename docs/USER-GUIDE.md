@@ -128,13 +128,20 @@ Fonti: <canale — titolo — URL>, <…>
 
 Hand the blog post to Claude as "the article". Claude follows `INSTRUCTIONS.md`:
 
-1. **`content.json`** — Claude maps the post to the deck schema
-   (title, subtitle, `badge` = "N SEGRETI", `secrets[]`, `cta_q`, one
-   `image_prompts` entry per slide, and the `caption`). The blog template
-   already lines up 1:1. Check it before rendering:
+1. **`content.json`** — the blog template lines up 1:1 with the deck schema, so
+   convert it directly:
+   ```
+   carousel import article.md
+   ```
+   That fills in the title, subtitle, every secret, the CTA, the badge, the
+   folder name and a starting-point image prompt per slide, then reports any
+   copy that runs past its length budget. Add the `caption` (see `CAPTION.md`)
+   and re-check:
    ```
    carousel check content.json
    ```
+   Starting without an article? `carousel new` asks for the same things
+   one question at a time.
 2. **Render the slides:**
    ```
    carousel render content.json --style v1

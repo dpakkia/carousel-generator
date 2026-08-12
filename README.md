@@ -51,7 +51,32 @@ They are fully independent: the same content renders in any style, and any style
 renders any content. Re-skinning a finished deck costs one command and reuses the
 existing background plates.
 
-### content.json
+### Writing content.json
+
+Three ways, easiest first.
+
+**From the article you already wrote.** The blog-post template in
+`docs/USER-GUIDE.md` is shaped like the deck, so it converts directly:
+
+```bash
+carousel import article.md
+```
+
+`# Title` becomes the cover, the line under it the subtitle, every `### …` a
+secret with its paragraph as the body, and the closing section's first line the
+CTA. Intro copy and the `Fonti:` line are ignored. The badge, the folder name
+and a starting-point image prompt per slide are filled in for you.
+
+**By answering questions.** For starting from scratch:
+
+```bash
+carousel new
+```
+
+It asks for the title, subtitle, each secret, and the closing question, and
+tells you when a line is over budget for its slide *before* you commit to it.
+
+**By hand**, from the shape below.
 
 ```json
 {
@@ -70,10 +95,20 @@ existing background plates.
 
 `secrets[]` drives the whole deck: **N secrets → N+2 slides** (cover + secrets +
 CTA), and `image_prompts[]` maps 1:1 onto those slides. Body copy supports
-`**bold**` markup. Run `carousel check content.json` to catch a mismatched
-prompt count or badge number before you render.
+`**bold**` markup. `carousel check content.json` catches a mismatched prompt
+count or badge number before you render.
 
----
+**Length budgets** — what actually fits a slide. `new` and `import` warn when
+copy runs past them:
+
+| Field | Budget |
+|-------|--------|
+| `title` | 9 words |
+| `subtitle` | 8 words |
+| each headline | 6 words |
+| each body | 240 characters |
+| `cta_q` | 14 words |
+| secrets | 8 max (Instagram caps the carousel at 10 slides) |
 
 ## The three stages
 
@@ -120,7 +155,20 @@ carousel preview content.json --out preview/
 ## Writing a style
 
 A style is JSON with five sections — `canvas`, `palette`, `fonts`, `type` and
-`slides`. The recipe under `slides` is an ordered list of drawing ops:
+`slides`. Styles are meant to be written conversationally: hand an AI
+`docs/STYLES.md`, a couple of the shipped styles as examples, and a description
+of the brand, then check what comes back:
+
+```bash
+carousel styles --check my-brand.json
+```
+
+That loads the file, renders every slide kind with sample copy, and names the
+exact step that fails — `midnight · cover slide · step 7 (op 'text'): unknown
+colour 'chartreuse'` — which is the feedback to paste straight back into the
+conversation.
+
+The recipe under `slides` is an ordered list of drawing ops:
 
 ```json
 {
@@ -162,7 +210,8 @@ List the ops any time with `carousel styles --ops`.
 
 Everything brand-specific is in two places:
 
-- `carousel/config.py` — `HANDLE` and `WORDMARK`
+- `carousel/config.py` — `HANDLE`, `WORDMARK`, and `IMAGE_STYLE` (the house look
+  every scaffolded image prompt carries, which is what keeps a deck coherent)
 - `fonts/` — drop in any TTF; its lowercased filename stem becomes a family name
   you can reference from a style's `fonts` section
 
@@ -183,6 +232,7 @@ carousel/
   engine.py       runs a style's recipes against a deck
   ops/            the drawing primitives styles call
   deck.py         content.json I/O, validation, folder naming
+  authoring.py    markdown -> deck, the guided wizard, length budgets
   render.py       orchestration
   compose.py      slides + plates -> final JPEGs
   images.py       background plate generation

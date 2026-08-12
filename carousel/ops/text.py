@@ -5,6 +5,8 @@ is the same op with a different text style. It understands `**bold**` markup,
 wraps to a column, aligns within it, and can advance the layout cursor so the
 next block positions itself with {"after": 24} instead of a magic number.
 """
+from PIL import Image, ImageDraw
+
 from .. import typography as ty
 from . import op
 
@@ -31,7 +33,7 @@ def _prepare(ctx, value, type, size, color, leading, tracking, width, uppercase)
 def text(ctx, value=None, type="body", x=None, y=None, width=None,
          align="left", color=None, size=None, leading=None, tracking=None,
          advance=True, max_lines=None, uppercase=False,
-         stroke_width=0, stroke_color=None, **_):
+         stroke_width=None, stroke_color=None, **_):
     """Draw a wrapped block of copy.
 
     value         literal string, "$field" for a deck field, or a "{field}" template
@@ -56,9 +58,22 @@ def text(ctx, value=None, type="body", x=None, y=None, width=None,
     if max_lines:
         lines = lines[:int(ctx.num(max_lines))]
 
-    end = ty.draw_lines(ctx.draw, x0, y0, lines, font, bold, fill, lead,
+    # Hollow type: a stroke with no fill. PIL falls back to its default white
+    # ink when fill is None, so the counter has to be punched out explicitly —
+    # on a scratch layer, or it would erase the scrim under the glyph too.
+    hollow = stroke and fill is None and stroke_fill is not None
+    if hollow:
+        layer = Image.new("RGBA", ctx.size, (0, 0, 0, 0))
+        surface = ImageDraw.Draw(layer)
+        fill = (0, 0, 0, 0)
+    else:
+        surface = ctx.draw
+
+    end = ty.draw_lines(surface, x0, y0, lines, font, bold, fill, lead,
                         align=align, width=col, tracking=track,
                         stroke_width=int(stroke), stroke_fill=stroke_fill)
+    if hollow:
+        ctx.img.alpha_composite(layer)
     if advance:
         ctx.set_cursor(end)
     ctx.last_block = {"x": x0, "y": y0, "width": col, "height": end - y0,

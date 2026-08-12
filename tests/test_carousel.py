@@ -10,7 +10,8 @@ import unittest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from carousel import deck, engine, render, fonts, typography as ty  # noqa: E402
+from carousel import deck, engine, render, fonts, authoring  # noqa: E402
+from carousel import typography as ty                               # noqa: E402
 from carousel import values                                         # noqa: E402
 from carousel.style import Style, StyleError, available             # noqa: E402
 from carousel.render import prune_stale                             # noqa: E402
@@ -186,6 +187,109 @@ class TestRender(unittest.TestCase):
         _, paths, removed = render.build(smaller, "v1", out_folder=folder, root=self.tmp)
         self.assertEqual(len(paths), 3)
         self.assertEqual(len(removed), 2)
+
+
+ARTICLE = """# 4 segreti per ritratti in luce naturale
+senza flash, senza pannelli
+
+Intro che non finisce in nessuna slide.
+
+## I segreti
+
+### 1. Cerca l'ombra, non il sole
+Mettiti **all'ombra aperta**: la luce arriva morbida e uniforme.
+
+### 2. Esponi per le alte luci
+Scendi di **-0,7 EV** e salva le zone chiare.
+
+## Chiudi
+Qual è il posto dove torni sempre a fotografare?
+
+---
+Fonti: Canale — Titolo — https://example.com
+"""
+
+
+class TestAuthoring(unittest.TestCase):
+    def test_markdown_becomes_a_deck(self):
+        content = authoring.from_markdown(ARTICLE)
+        self.assertEqual(content["title"], "4 segreti per ritratti in luce naturale")
+        self.assertEqual(content["subtitle"], "senza flash, senza pannelli")
+        self.assertEqual(len(content["secrets"]), 2)
+        self.assertEqual(content["secrets"][0][0], "Cerca l'ombra, non il sole")
+        self.assertIn("**all'ombra aperta**", content["secrets"][0][1])
+        self.assertEqual(content["cta_q"], "Qual è il posto dove torni sempre a fotografare?")
+
+    def test_badge_and_name_are_derived(self):
+        content = authoring.from_markdown(ARTICLE)
+        self.assertEqual(content["badge"], "2 SEGRETI")
+        self.assertEqual(content["name"], "4-segreti-per-ritratti-in-luce-naturale")
+
+    def test_intro_and_sources_are_not_slides(self):
+        content = authoring.from_markdown(ARTICLE)
+        joined = json_dumps(content)
+        self.assertNotIn("Intro che non finisce", joined)
+        self.assertNotIn("example.com", joined)
+
+    def test_imported_deck_is_valid_and_renders(self):
+        content = authoring.from_markdown(ARTICLE)
+        content["image_prompts"] = authoring.scaffold_prompts(content)
+        self.assertEqual(deck.validate(content), [])
+        self.assertEqual(len(engine.render_deck(Style.load("v1"), content)), 4)
+
+    def test_one_scaffolded_prompt_per_slide(self):
+        content = authoring.from_markdown(ARTICLE)
+        prompts = authoring.scaffold_prompts(content)
+        self.assertEqual(len(prompts), deck.total_slides(content))
+        for p in prompts:
+            self.assertTrue(p.endswith("No text, no letters, no watermark."))
+            self.assertNotIn("**", p, "markup must not reach an image prompt")
+
+    def test_budget_warnings_flag_long_copy(self):
+        content = authoring.from_markdown(ARTICLE)
+        self.assertEqual(authoring.budget_warnings(content), [])
+        content["secrets"][0][1] = "x" * 400
+        self.assertTrue(any("body" in w for w in authoring.budget_warnings(content)))
+
+    def test_budget_ignores_bold_markers(self):
+        over, _, _ = authoring.over_budget("headline", "**una due tre**")
+        self.assertEqual(over, 0)
+
+    def test_article_without_secrets_yields_none(self):
+        self.assertEqual(authoring.from_markdown("# Solo un titolo\n")["secrets"], [])
+
+
+class TestHollowType(unittest.TestCase):
+    """v3 draws its numerals as an outline: a stroke with no fill."""
+
+    def test_type_style_stroke_is_not_lost(self):
+        style = Style.load("v3")
+        self.assertEqual(style.text_style("number")["stroke_width"], 3)
+        self.assertIsNone(style.text_style("number")["color"])
+
+    def test_outline_numeral_leaves_its_counter_open(self):
+        style = Style.load("v3")
+        img = engine.render_slide(
+            style, "secret", engine.slide_data(DECK, "secret", 2, 1, 3, 5))
+        # The bowl of the "0" sits inside the numeral; an outline leaves it clear
+        # while a filled numeral would paint it. Sample well inside the glyph.
+        px = img.getpixel((120, 210))
+        self.assertLess(px[3], 200, "numeral counter should not be filled in")
+
+    def test_stroke_colour_is_actually_drawn(self):
+        style = Style.load("v3")
+        img = engine.render_slide(
+            style, "secret", engine.slide_data(DECK, "secret", 2, 1, 3, 5))
+        amber = tuple(style.palette["amber"])
+        px = img.load()
+        found = any(px[x, y][:3] == amber and px[x, y][3] > 200
+                    for x in range(80, 400, 2) for y in range(110, 380, 2))
+        self.assertTrue(found, "no amber stroke pixels found in the numeral area")
+
+
+def json_dumps(obj):
+    import json
+    return json.dumps(obj, ensure_ascii=False)
 
 
 class TestExampleDeck(unittest.TestCase):
