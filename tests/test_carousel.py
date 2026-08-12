@@ -450,6 +450,74 @@ def json_dumps(obj):
     return json.dumps(obj, ensure_ascii=False)
 
 
+class TestSharedStrings(unittest.TestCase):
+    """A brand with several decks keeps its vocabulary in one file, and that
+    file lives with the brand's work rather than inside this repository."""
+
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+        self.brand = os.path.join(self.tmp, "brand.json")
+        with open(self.brand, "w", encoding="utf-8") as f:
+            json.dump({"_note": "ignored", "section": "DETTAGLIO",
+                       "save": "Salvalo per dopo"}, f)
+        self.deck_dir = os.path.join(self.tmp, "decks", "01-x")
+        os.makedirs(self.deck_dir)
+        self.path = os.path.join(self.deck_dir, "content.json")
+        self.write({"strings": "../../brand.json"})
+
+    def tearDown(self):
+        shutil.rmtree(self.tmp, ignore_errors=True)
+
+    def write(self, extra):
+        with open(self.path, "w", encoding="utf-8") as f:
+            json.dump(dict(DECK, locale="it", **extra), f, ensure_ascii=False)
+
+    def test_a_path_is_resolved_relative_to_the_deck(self):
+        content = deck.load(self.path)
+        self.assertEqual(deck.strings_for(content)["section"], "DETTAGLIO")
+
+    def test_underscore_keys_in_the_brand_file_are_ignored(self):
+        self.assertNotIn("_note", deck.strings_for(deck.load(self.path)))
+
+    def test_the_words_reach_the_slide(self):
+        content = deck.load(self.path)
+        data = engine.slide_data(content, "cta", 5, total=5, style=Style.load("v7"))
+        self.assertEqual(data["section"], "DETTAGLIO", "brand file wins")
+        self.assertEqual(data["scroll"], "Scorri →", "locale still supplies the rest")
+
+    def test_saving_keeps_the_reference_rather_than_inlining_it(self):
+        content = deck.load(self.path)
+        deck.save(content, self.path)
+        with open(self.path, encoding="utf-8") as f:
+            raw = json.load(f)
+        self.assertEqual(raw["strings"], "../../brand.json")
+        self.assertNotIn("_strings", raw, "working state must not be written back")
+
+    def test_an_inline_object_still_works(self):
+        self.write({"strings": {"section": "INLINE"}})
+        content = deck.load(self.path)
+        self.assertEqual(deck.strings_for(content)["section"], "INLINE")
+
+    def test_a_missing_file_says_where_it_looked(self):
+        self.write({"strings": "../../nope.json"})
+        with self.assertRaises(deck.DeckError) as ctx:
+            deck.load(self.path)
+        self.assertIn("nope.json", str(ctx.exception))
+        self.assertIn("relative to", str(ctx.exception))
+
+    def test_an_absolute_path_works_too(self):
+        self.write({"strings": self.brand})
+        self.assertEqual(deck.strings_for(deck.load(self.path))["section"], "DETTAGLIO")
+
+    def test_a_brand_file_that_is_not_an_object_is_rejected(self):
+        bad = os.path.join(self.tmp, "bad.json")
+        with open(bad, "w", encoding="utf-8") as f:
+            json.dump(["not", "an", "object"], f)
+        self.write({"strings": bad})
+        with self.assertRaises(deck.DeckError):
+            deck.load(self.path)
+
+
 class TestRotation(unittest.TestCase):
     """Consecutive decks must not repeat a look."""
 

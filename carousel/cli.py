@@ -125,7 +125,7 @@ def main(argv=None):
     try:
         return args.func(args) or 0
     except (StyleError, images_mod.ImageError, reindex_mod.ReindexError,
-            FileNotFoundError) as e:
+            deck_io.DeckError, FileNotFoundError) as e:
         print(f"error: {e}", file=sys.stderr)
         return 1
 

@@ -14,6 +14,7 @@ from . import ops
 from . import values
 from . import locales
 from .style import Style, StyleError
+from .deck import strings_for
 from .config import HANDLE, WORDMARK
 
 
@@ -132,7 +133,7 @@ def slide_data(content, kind, number=None, index=None, count=None,
     # sit under the locale, the deck's own `strings` block over it.
     data.update(locales.resolve(content.get("locale"), data,
                                 style_strings=getattr(style, "strings", None),
-                                deck_strings=content.get("strings")))
+                                deck_strings=strings_for(content)))
     return data
 
 

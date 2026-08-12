@@ -160,6 +160,33 @@ style's own `strings`. So chrome resolves **style → locale → deck**, nearest
 wins, with the locale above the style because anything translatable belongs in a
 locale file.
 
+### One brand, many decks
+
+Repeating the same `strings` block in every deck is how it drifts. Point at a
+shared file instead — the path is resolved **relative to the deck's own
+content.json**, so the file lives with the brand's work rather than inside this
+repository, and updating the tool can never touch it:
+
+```json
+{ "locale": "it", "strings": "../../brand.json" }
+```
+
+```
+~/work/inside-auto/
+  brand.json                       ← the brand's vocabulary, one file
+  decks/
+    01-vernice/content.json        ← "strings": "../../brand.json"
+    02-interni/content.json        ← the same
+```
+
+Editing a deck keeps the pointer rather than inlining a copy of it. Keys
+beginning with `_` in the shared file are ignored, so it can carry a note about
+what it is.
+
+Brand words belong in a deck or a shared file, **not in a style**: a style's
+words are language-blind, so a style overriding "PUNTO" would impose Italian on
+an English deck. That is why the locale outranks the style.
+
 Brand works the same way. `handle` and `wordmark` on the deck are what a style
 prints as the account mark; set them per deck when one install serves several
 clients, or once in `carousel/config.py` if you only have one brand. Set neither

@@ -163,6 +163,34 @@ nel blocco `strings` di quello stile. Quindi i testi si risolvono
 **stile → lingua → deck**, vince il più vicino, con la lingua sopra lo stile
 perché tutto ciò che è traducibile appartiene a un file di lingua.
 
+### Un brand, tanti deck
+
+Ripetere lo stesso blocco `strings` in ogni deck è il modo più sicuro per farlo
+divergere. Punta invece a un file condiviso: il percorso si risolve **rispetto
+al content.json del deck**, così il file sta insieme al lavoro del brand e non
+dentro questo repository, e aggiornare lo strumento non può toccarlo:
+
+```json
+{ "locale": "it", "strings": "../../brand.json" }
+```
+
+```
+~/lavoro/inside-auto/
+  brand.json                       ← il lessico del brand, un file solo
+  decks/
+    01-vernice/content.json        ← "strings": "../../brand.json"
+    02-interni/content.json        ← lo stesso
+```
+
+Modificare un deck mantiene il puntatore, non ne incolla dentro una copia. Le
+chiavi che iniziano con `_` nel file condiviso vengono ignorate, così può
+portarsi una nota su cos'è.
+
+Le parole del brand stanno nel deck o in un file condiviso, **non in uno stile**:
+le parole di uno stile sono cieche alla lingua, quindi uno stile che scavalca
+"PUNTO" imporrebbe l'italiano a un deck inglese. È per questo che la lingua
+batte lo stile.
+
 Il brand funziona allo stesso modo. `handle` e `wordmark` nel deck sono quello
 che lo stile stampa come firma: impostali per deck quando la stessa
 installazione serve più clienti, oppure una volta sola in `carousel/config.py` se

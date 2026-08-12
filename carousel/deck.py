@@ -11,16 +11,70 @@ import glob
 import json
 
 
+class DeckError(ValueError):
+    """A deck refers to something that is not there."""
+
+
 def load(path):
-    """Read a content.json into a dict."""
+    """Read a content.json into a dict, resolving anything it points at."""
     with open(path, encoding="utf-8") as f:
-        return json.load(f)
+        content = json.load(f)
+    resolve_strings(content, os.path.dirname(os.path.abspath(path)))
+    return content
+
+
+def resolve_strings(content, base_dir):
+    """Expand `"strings": "<path>"` into the words it names.
+
+    A brand that words things its own way usually has more than one deck, so
+    `strings` accepts a path as well as an inline object. The path is resolved
+    **relative to the content.json**, which lets the shared file live wherever
+    the brand's work lives — outside this repository, so updating the tool
+    cannot touch it.
+
+    The reference itself is left in place; the resolved words go in `_strings`,
+    which `save()` drops. That way editing a deck round-trips the pointer
+    instead of silently inlining a copy of the brand's vocabulary.
+    """
+    ref = content.get("strings")
+    if not isinstance(ref, str):
+        return content
+
+    path = os.path.expanduser(ref)
+    if not os.path.isabs(path):
+        path = os.path.join(base_dir, path)
+    if not os.path.isfile(path):
+        raise DeckError(
+            f"strings file not found: {ref!r} (looked in {os.path.abspath(path)}). "
+            f"The path is relative to the deck's own content.json.")
+
+    with open(path, encoding="utf-8") as f:
+        words = json.load(f)
+    if not isinstance(words, dict):
+        raise DeckError(f"{ref!r} should contain an object of words, not "
+                        f"{type(words).__name__}")
+    content["_strings"] = {k: v for k, v in words.items()
+                           if isinstance(v, str) and not k.startswith("_")}
+    return content
+
+
+def strings_for(content):
+    """The deck's own words, whether given inline or by reference."""
+    if "_strings" in content:
+        return content["_strings"]
+    ref = content.get("strings")
+    return ref if isinstance(ref, dict) else None
 
 
 def save(content, path):
-    """Write a content.json back, escaping inner quotes and keeping accents."""
+    """Write a content.json back, escaping inner quotes and keeping accents.
+
+    Keys beginning with `_` are working state, not deck content, and are
+    dropped — a `strings` reference is saved as the reference it was.
+    """
+    clean = {k: v for k, v in content.items() if not k.startswith("_")}
     with open(path, "w", encoding="utf-8") as f:
-        json.dump(content, f, ensure_ascii=False, indent=2)
+        json.dump(clean, f, ensure_ascii=False, indent=2)
         f.write("\n")
 
 

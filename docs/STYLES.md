@@ -206,6 +206,13 @@ Chrome resolves in three layers, each overriding the last:
 { "locale": "it", "strings": { "save": "Salvalo per la prossima sessione" } }
 ```
 
+A brand with more than one deck points at a shared file instead, resolved
+relative to the deck's own `content.json` so it can live outside this repository:
+
+```json
+{ "locale": "it", "strings": "../../brand.json" }
+```
+
 The locale sits **above** the style on purpose: anything genuinely translatable
 belongs in a locale file, and putting it there should beat a style's English
 placeholder rather than lose to it. A style's `strings` is only for props no

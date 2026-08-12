@@ -171,6 +171,19 @@ car-care account rendering in Italian got photography jargon it never asked for.
   and every deck. A test fails the build if one picks up brand vocabulary.
 - **Brand wording goes in the deck's `strings`.** That is how
   `examples/scintilla-visiva/` keeps `SEGRETO` without imposing it on anyone.
+- **A brand with several decks points at one shared file**, and that file lives
+  with the brand's work, outside this repository:
+  ```json
+  { "locale": "it", "strings": "../../brand.json" }
+  ```
+  The path resolves relative to the deck's own `content.json`. Never tell
+  someone to keep their brand file inside `carousel/` — updating the tool would
+  overwrite it, and a fresh clone would lose it. Editing a deck keeps the
+  pointer; it is not inlined.
+- **Never put brand words in a style.** A style's words are language-blind, so
+  a style overriding "PUNTO" would impose Italian on an English deck. That is
+  why the locale outranks the style, and why a style's `strings` is only for
+  props no locale would know about.
 - **Style furniture goes in the style's `strings`.** Decorative props belong to
   the look.
 - The same applies to `image_style`, `handle` and `wordmark`: deck first, style
