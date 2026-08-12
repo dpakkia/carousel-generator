@@ -24,6 +24,8 @@ Create a new one by dropping a file in that directory. It appears in
   "extends": "_base",
   "meta": { "description": "…", "tags": ["dark"] },
 
+  "image_style": "the photography this look sits on",
+
   "canvas":  { "width": 1080, "height": 1350, "margin": 96 },
   "palette": { "scrim": [12, 14, 20], "ink": "#F0F0EB" },
   "fonts":   { "sans": { "family": "inter" } },
@@ -100,6 +102,25 @@ to the entry by name.
 Without `bold_font`, bold runs resolve automatically: two steps up the weight
 ladder for named weights, `+200 wght` for axis-driven fonts, the `-Bold` file for
 families that ship one.
+
+### image_style
+
+The art direction for the background plates this look sits on. A brutalist look
+and a duotone look want different photography behind them, so the clause travels
+with the style rather than with the install:
+
+```json
+"image_style": "Stark documentary photography, near-monochrome with one warm accent, hard light, raw texture."
+```
+
+It is appended to every prompt `carousel new`, `import` and `prompts` scaffold,
+alongside a negative-space clause chosen per slide kind. Nearest wins: a deck's
+own `image_style` overrides the style's, which overrides `IMAGE_STYLE` in
+`carousel/config.py`.
+
+Prompts are stored in `content.json`, so re-skinning a deck does not re-derive
+them. `carousel prompts <deck> --style vN` rewrites them; existing plates on
+disk are never touched.
 
 ### variants
 

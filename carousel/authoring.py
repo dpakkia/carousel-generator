@@ -162,16 +162,38 @@ _NEGATIVE_SPACE = {
 }
 
 
-def scaffold_prompts(content, style=IMAGE_STYLE):
+def resolve_image_style(content=None, style=None):
+    """The art-direction clause for a deck's plates.
+
+    Nearest wins: the deck's own `image_style`, else the style's — a brutalist
+    look and a duotone look want different photography behind them — else the
+    install-wide default in config.
+    """
+    if content and content.get("image_style"):
+        return content["image_style"]
+    if style is not None:
+        if isinstance(style, str):
+            return style
+        if getattr(style, "image_style", None):
+            return style.image_style
+    return IMAGE_STYLE
+
+
+def scaffold_prompts(content, style=None):
     """One starting-point image prompt per slide, in slide order.
 
     These are a scaffold, not finished art direction — the subject clause is
     lifted from each slide's own copy. Rewrite the subject, keep the style and
     the negative-space clause, and the deck stays visually coherent.
+
+    `style` may be a Style, a literal clause, or None to fall back through
+    the deck and then the install default.
     """
+    clause = resolve_image_style(content, style)
+
     def build(subject, kind):
         subject = re.sub(r"\*\*", "", subject or "").strip().rstrip(".")
-        return (f"{subject}. {style} 1080x1350 portrait (4:5), "
+        return (f"{subject}. {clause} 1080x1350 portrait (4:5), "
                 f"{_NEGATIVE_SPACE[kind]}, low contrast, nothing busy. "
                 f"No text, no letters, no watermark.")
 
@@ -183,7 +205,7 @@ def scaffold_prompts(content, style=IMAGE_STYLE):
 
 
 # --------------------------------------------------------------------- wizard
-def wizard(ask=input, out=print, locale=None):
+def wizard(ask=input, out=print, locale=None, style=None):
     """Guided questions -> a deck. `ask`/`out` are injectable for testing."""
     def field(label, key, hint="", required=True):
         limit, unit = BUDGETS.get(key, (None, None))
@@ -250,7 +272,7 @@ def wizard(ask=input, out=print, locale=None):
     if caption:
         content["caption"] = "\n".join(caption)
 
-    content["image_prompts"] = scaffold_prompts(content)
+    content["image_prompts"] = scaffold_prompts(content, style)
     if locale and locale != locales.DEFAULT:
         content["locale"] = locale
     return content

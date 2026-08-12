@@ -157,6 +157,17 @@ prints as the account mark; set them per deck when one install serves several
 clients, or once in `carousel/config.py` if you only have one brand. Set neither
 and the marks are simply not drawn — an unbranded deck renders cleanly.
 
+So does the art direction of the generated plates. Each style carries its own
+`image_style`, because the photography behind a brutalist look is not the
+photography behind a duotone one, and a deck can override it:
+
+```bash
+carousel import article.md --style v4     # prompts art-directed for that look
+carousel prompts content.json --style v6  # re-derive them after a re-skin
+```
+
+Nearest wins throughout: **deck → style → `carousel/config.py`**.
+
 ---
 
 ## Building the deck
@@ -287,7 +298,7 @@ immediately.
 | What | Where |
 |------|-------|
 | Handle and wordmark | `handle` / `wordmark` in the deck, or `carousel/config.py` for a single brand |
-| Look of the generated plates | `IMAGE_STYLE` in `carousel/config.py` — the clause every scaffolded prompt carries, which is what keeps a deck coherent slide to slide |
+| Look of the generated plates | `image_style` in the deck, else in the style, else `IMAGE_STYLE` in `carousel/config.py` |
 | The words on the slides | `carousel/locales/<lang>.json` |
 | Typefaces | drop a TTF in `fonts/`; its lowercased stem becomes the family name a style references |
 | The look itself | a new file in `carousel/styles/` |

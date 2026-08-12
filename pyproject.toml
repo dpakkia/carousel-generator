@@ -7,6 +7,7 @@ name = "carousel-generator"
 version = "1.0.0"
 description = "Data-driven Instagram carousel generator: copy in one JSON, look in another."
 license = "MIT"
+authors = [{ name = "Davide Pacchiarotti" }]
 keywords = ["instagram", "carousel", "social-media", "generator", "pillow", "design-system"]
 readme = "README.md"
 requires-python = ">=3.9"

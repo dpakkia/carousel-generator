@@ -260,6 +260,44 @@ class TestAuthoring(unittest.TestCase):
         self.assertEqual(authoring.from_markdown("# Solo un titolo\n")["secrets"], [])
 
 
+class TestImageStyle(unittest.TestCase):
+    """Plate art direction: deck beats style beats install default."""
+
+    def test_every_shipped_style_art_directs_its_plates(self):
+        for name in available():
+            with self.subTest(style=name):
+                self.assertTrue(Style.load(name).image_style,
+                                f"{name} has no image_style")
+
+    def test_styles_do_not_all_share_one_look(self):
+        clauses = {Style.load(n).image_style for n in available()}
+        self.assertGreater(len(clauses), 1, "art direction must vary by style")
+
+    def test_style_beats_the_install_default(self):
+        from carousel import config
+        clause = authoring.resolve_image_style({}, Style.load("v6"))
+        self.assertNotEqual(clause, config.IMAGE_STYLE)
+        self.assertEqual(clause, Style.load("v6").image_style)
+
+    def test_deck_beats_the_style(self):
+        clause = authoring.resolve_image_style(
+            {"image_style": "my own look"}, Style.load("v6"))
+        self.assertEqual(clause, "my own look")
+
+    def test_falls_back_to_config_with_neither(self):
+        from carousel import config
+        self.assertEqual(authoring.resolve_image_style({}, None), config.IMAGE_STYLE)
+
+    def test_a_literal_clause_is_accepted(self):
+        self.assertEqual(authoring.resolve_image_style({}, "just this"), "just this")
+
+    def test_scaffolded_prompts_carry_the_style_look(self):
+        prompts = authoring.scaffold_prompts(
+            {"title": "T", "secrets": [["h", "b"]], "cta_q": "q"}, Style.load("v4"))
+        marker = Style.load("v4").image_style[:30]
+        self.assertTrue(all(marker in p for p in prompts))
+
+
 class TestLocales(unittest.TestCase):
     """Slide chrome is data, so one file re-languages every style."""
 

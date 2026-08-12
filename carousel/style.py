@@ -47,6 +47,11 @@ class Style:
         self.vars = data.get("vars", {})
         self.slides = data.get("slides", {})
 
+        # Art direction for the generated background plates. A look and the
+        # photography behind it are one decision, so a style may carry its own;
+        # a deck can still override, and config supplies the fallback.
+        self.image_style = data.get("image_style")
+
     # ----------------------------------------------------------------- loading
     @classmethod
     def load(cls, ref, seen=None):

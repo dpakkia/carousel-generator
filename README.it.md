@@ -162,6 +162,17 @@ installazione serve più clienti, oppure una volta sola in `carousel/config.py` 
 hai un brand solo. Se non imposti né l'uno né l'altro, quelle firme non vengono
 disegnate e il deck resta pulito.
 
+Vale anche per la direzione artistica degli sfondi. Ogni stile porta il proprio
+`image_style`, perché la fotografia dietro un look brutalista non è quella dietro
+un duotone, e un deck può scavalcarlo:
+
+```bash
+carousel import articolo.md --style v4     # prompt diretti per quel look
+carousel prompts content.json --style v6   # rigenerali dopo un cambio di stile
+```
+
+Vince sempre il più vicino: **deck → stile → `carousel/config.py`**.
+
 ---
 
 ## Costruire il deck
@@ -296,7 +307,7 @@ il file finito in `carousel/styles/` e compare subito in `carousel styles`.
 | Cosa | Dove |
 |------|------|
 | Handle e wordmark | `handle` / `wordmark` nel deck, oppure `carousel/config.py` se hai un brand solo |
-| Look degli sfondi generati | `IMAGE_STYLE` in `carousel/config.py` — la frase che ogni prompt generato porta con sé, ed è ciò che tiene coerente il deck da una slide all'altra |
+| Look degli sfondi generati | `image_style` nel deck, altrimenti nello stile, altrimenti `IMAGE_STYLE` in `carousel/config.py` |
 | Le parole sulle slide | `carousel/locales/<lingua>.json` |
 | I caratteri | metti un TTF in `fonts/`; il nome del file in minuscolo diventa la famiglia che uno stile richiama |
 | Il look vero e proprio | un file nuovo in `carousel/styles/` |

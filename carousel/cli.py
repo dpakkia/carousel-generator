@@ -66,6 +66,7 @@ def main(argv=None):
     p.add_argument("--out", "-o", default="content.json")
     p.add_argument("--force", action="store_true", help="overwrite an existing file")
     p.add_argument("--locale", "-l", help="language for the slide chrome (default: en)")
+    p.add_argument("--style", "-s", help="art-direct the image prompts for this style")
     p.set_defaults(func=cmd_new)
 
     p = sub.add_parser("import", help="turn a blog-post markdown file into a content.json")
@@ -75,7 +76,14 @@ def main(argv=None):
     p.add_argument("--no-prompts", action="store_true",
                    help="leave image_prompts empty instead of scaffolding them")
     p.add_argument("--locale", "-l", help="language for the slide chrome (default: en)")
+    p.add_argument("--style", "-s", help="art-direct the image prompts for this style")
     p.set_defaults(func=cmd_import)
+
+    p = sub.add_parser("prompts", help="rewrite a deck's image prompts for a style")
+    p.add_argument("content")
+    p.add_argument("--style", "-s", help="take the art direction from this style")
+    p.add_argument("--dry-run", action="store_true", help="show them without saving")
+    p.set_defaults(func=cmd_prompts)
 
     p = sub.add_parser("styles", help="list the available styles")
     p.add_argument("--ops", action="store_true", help="also list the drawing ops")
@@ -158,7 +166,8 @@ def cmd_new(args):
               file=sys.stderr)
         return 1
     try:
-        content = authoring.wizard(locale=args.locale)
+        content = authoring.wizard(locale=args.locale,
+                                   style=_style_or_none(args.style))
     except (KeyboardInterrupt, EOFError):
         print("\naborted — nothing written")
         return 1
@@ -178,8 +187,40 @@ def cmd_import(args):
               "secret — see docs/USER-GUIDE.md for the template.", file=sys.stderr)
         return 1
     if not args.no_prompts:
-        content["image_prompts"] = authoring.scaffold_prompts(content)
+        content["image_prompts"] = authoring.scaffold_prompts(
+            content, _style_or_none(args.style))
     return _write_content(content, args.out)
+
+
+def cmd_prompts(args):
+    """Re-derive the image prompts, e.g. after re-skinning a deck.
+
+    Prompts live in content.json, so switching a deck's look leaves the old art
+    direction behind until they are rewritten. Plates already on disk are never
+    touched — regenerate the ones you want with `plates --only`.
+    """
+    content = deck_io.load(args.content)
+    style = _style_or_none(args.style)
+    prompts = authoring.scaffold_prompts(content, style)
+    clause = authoring.resolve_image_style(content, style)
+
+    print(f"art direction: {clause}\n")
+    for i, prompt in enumerate(prompts, start=1):
+        print(f"  {i:02d}  {prompt[:100]}…")
+    if args.dry_run:
+        print("\ndry run — nothing written")
+        return 0
+
+    content["image_prompts"] = prompts
+    deck_io.save(content, args.content)
+    print(f"\n{len(prompts)} prompts written to {args.content}")
+    print("existing plates are untouched; regenerate with: "
+          "carousel plates <folder> --only N --force")
+    return 0
+
+
+def _style_or_none(name):
+    return Style.load(name) if name else None
 
 
 def _write_content(content, path):
