@@ -12,6 +12,10 @@ caption.txt
 .env.*
 !.env.example
 
+# Local working notes — session feedback about how to work with this project.
+# Not for a public repository.
+feedback.md
+
 # Python
 __pycache__/
 *.py[cod]
