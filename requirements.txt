@@ -1,0 +1,5 @@
+# Core rendering. Everything else in the pipeline is standard library.
+Pillow>=10.0
+
+# Optional: only needed for `carousel plates` (background generation).
+# openai>=1.40

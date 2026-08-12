@@ -1,0 +1,133 @@
+{
+  "name": "v7",
+  "label": "Kinetic Teaching",
+  "extends": "_base",
+  "meta": {
+    "description": "Photography pedagogy as design: each slide is framed like a viewfinder or a technical diagram — a faint rule-of-thirds grid, corner marks, focus brackets and a Space Mono HUD. The geometry doubles as the legibility scaffold.",
+    "tags": ["dark", "technical", "mono"]
+  },
+
+  "canvas": { "margin": 84 },
+
+  "palette": {
+    "scrim": [16, 17, 21],
+    "text": [240, 237, 231],
+    "dim": [204, 201, 195],
+    "muted": [146, 150, 156],
+    "amber": [240, 184, 96],
+    "focus": [120, 222, 150],
+    "hud": [224, 222, 214]
+  },
+
+  "vars": { "TXTW": "W - 2 * MX" },
+
+  "type": {
+    "hud": { "font": "mono", "variant": "bold", "size": 22, "tracking": 2, "color": "text" },
+    "hud_r": { "font": "mono", "size": 22, "color": "muted" },
+    "handle": { "font": "mono", "size": 21, "color": "muted" },
+    "cue": { "font": "mono", "variant": "bold", "size": 22, "color": "amber" },
+    "badge": { "font": "mono", "variant": "bold", "size": 24, "tracking": 1, "color": "amber" },
+    "title": { "font": "sans", "weight": "Bold", "size": 92, "leading": 100, "color": "text" },
+    "subtitle": { "font": "mono", "size": 30, "leading": 48, "color": "dim" },
+    "number": { "font": "sans", "weight": "Black", "size": 120, "leading": 120, "color": "text" },
+    "seclabel": { "font": "mono", "variant": "bold", "size": 26, "tracking": 3, "color": "amber" },
+    "secref": { "font": "mono", "size": 22, "color": "muted" },
+    "headline": { "font": "sans", "weight": "Bold", "size": 58, "leading": 70, "color": "text" },
+    "body": { "font": "sans", "weight": "Regular", "size": 38, "leading": 56, "color": "dim" },
+    "question": { "font": "sans", "weight": "Bold", "size": 62, "leading": 76, "color": "text" },
+    "save": { "font": "mono", "variant": "bold", "size": 26, "leading": 50, "color": "amber" },
+    "follow": { "font": "sans", "weight": "Bold", "size": 44, "color": "text" }
+  },
+
+  "slides": {
+    "cover": [
+      { "op": "vscrim", "top": 35, "bottom": 200 },
+      { "op": "grid", "divisions": 3, "color": "hud", "alpha": 46, "width": 1, "intersections": 8 },
+      { "op": "corner_marks", "inset": "MX", "length": 44, "color": "hud", "alpha": 210, "width": 3 },
+
+      { "op": "ellipse", "x": "MX + 6", "y": "MX - 24", "r": 6, "fill": "focus" },
+      { "op": "text", "value": "$wordmark", "type": "hud", "x": "MX + 22", "y": "MX - 32", "advance": false },
+      { "op": "text", "value": "4:5 · 1080×1350", "type": "hud_r", "x": "MX", "y": "MX - 32",
+        "align": "right", "advance": false },
+
+      { "op": "measure", "name": "t", "value": "$title", "type": "title" },
+      { "op": "measure", "name": "s", "value": "$subtitle", "type": "subtitle" },
+      { "op": "cursor", "to": "(H - MX - 70) - (52 + t_h + 22 + s_h)" },
+
+      { "op": "text", "value": "[ {badge} ]", "type": "badge", "uppercase": true,
+        "x": "MX", "y": { "after": -4 }, "advance": false },
+      { "op": "cursor", "by": 52 },
+
+      { "op": "text", "value": "$title", "type": "title", "x": "MX", "y": { "after": 0 } },
+      { "op": "bracket", "box": ["MX - 22", "cursor - t_h - 16", "W - MX + 22", "cursor + 6"],
+        "length": 26, "color": "focus", "width": 3 },
+      { "op": "ellipse", "x": "W - MX + 13", "y": "cursor - t_h - 17", "r": 9, "fill": "focus" },
+
+      { "op": "text", "value": "$subtitle", "type": "subtitle", "x": "MX", "y": { "after": 22 } },
+
+      { "op": "text", "value": "$handle", "type": "handle", "x": "MX", "y": "H - MX + 14", "advance": false },
+      { "op": "text", "value": "SCORRI →", "type": "cue", "x": "MX", "y": "H - MX + 13",
+        "align": "right", "advance": false }
+    ],
+
+    "secret": [
+      { "op": "vscrim", "top": 150, "bottom": 120 },
+      { "op": "grid", "divisions": 3, "color": "hud", "alpha": 46, "width": 1, "intersections": 8 },
+      { "op": "corner_marks", "inset": "MX", "length": 44, "color": "hud", "alpha": 210, "width": 3 },
+
+      { "op": "ellipse", "x": "MX + 6", "y": "MX - 24", "r": 6, "fill": "focus" },
+      { "op": "text", "value": "$wordmark", "type": "hud", "x": "MX + 22", "y": "MX - 32", "advance": false },
+      { "op": "text", "value": "FIG. {index:02d} / {count:02d}", "type": "hud_r", "x": "MX", "y": "MX - 32",
+        "align": "right", "advance": false },
+
+      { "op": "measure", "name": "num", "value": "{index:02d}", "type": "number" },
+      { "op": "text", "value": "{index:02d}", "type": "number", "x": "MX", "y": 188, "advance": false },
+      { "op": "text", "value": "SEGRETO", "type": "seclabel", "x": "MX + num_w + 26", "y": 214, "advance": false },
+      { "op": "text", "value": "NO. {index:02d} / {count:02d}", "type": "secref",
+        "x": "MX + num_w + 26", "y": 250, "advance": false },
+      { "op": "ticks", "x": "MX", "to": "W - MX", "y": 330, "count": 9, "length": 12, "minor": 6,
+        "color": "amber", "alpha": 170, "width": 2 },
+
+      { "op": "measure", "name": "h", "value": "$headline", "type": "headline" },
+      { "op": "measure", "name": "b", "value": "$body", "type": "body" },
+      { "op": "panel", "box": ["MX - 24", 368, "W - MX + 24", "392 + (h_h + 26 + b_h) + 24"],
+        "color": "scrim", "alpha": 140, "radius": 8, "blur": 7 },
+      { "op": "rect", "box": ["MX", 390, "MX + 64", 396], "fill": "amber" },
+
+      { "op": "text", "value": "$headline", "type": "headline", "x": "MX", "y": 416 },
+      { "op": "text", "value": "$body", "type": "body", "x": "MX", "y": { "after": 26 } },
+
+      { "op": "text", "value": "$handle", "type": "handle", "x": "MX", "y": "H - MX + 14", "advance": false },
+      { "op": "text", "value": "→", "type": "cue", "x": "MX", "y": "H - MX + 13",
+        "align": "right", "advance": false }
+    ],
+
+    "cta": [
+      { "op": "vscrim", "top": 70, "bottom": 150 },
+      { "op": "grid", "divisions": 3, "color": "hud", "alpha": 46, "width": 1, "intersections": 8 },
+      { "op": "corner_marks", "inset": "MX", "length": 44, "color": "hud", "alpha": 210, "width": 3 },
+
+      { "op": "ellipse", "x": "MX + 6", "y": "MX - 24", "r": 6, "fill": "focus" },
+      { "op": "text", "value": "$wordmark", "type": "hud", "x": "MX + 22", "y": "MX - 32", "advance": false },
+      { "op": "text", "value": "FOCUS · LOCK", "type": "hud_r", "x": "MX", "y": "MX - 32",
+        "align": "right", "advance": false },
+
+      { "op": "measure", "name": "q", "value": "$question", "type": "question" },
+      { "op": "cursor", "to": "int((H - (120 + q_h + 40 + 50 + 56)) / 2) + 10" },
+
+      { "op": "reticle", "x": "W / 2", "y": { "after": 0 }, "r": 44, "gap": 10, "tail": 14,
+        "color": "amber", "width": 3 },
+      { "op": "cursor", "by": 100 },
+
+      { "op": "text", "value": "$question", "type": "question", "x": "MX",
+        "y": { "after": 0 }, "align": "center" },
+      { "op": "bracket", "box": ["MX + 30", "cursor - q_h - 18", "W - MX - 30", "cursor + 6"],
+        "length": 26, "color": "focus", "width": 3 },
+
+      { "op": "text", "value": "[ SALVA · SCORRI ]", "type": "save", "x": "MX",
+        "y": { "after": 40 }, "align": "center" },
+      { "op": "text", "value": "SEGUI {handle}", "type": "follow", "x": "MX",
+        "y": { "after": 0 }, "align": "center" }
+    ]
+  }
+}

@@ -1,0 +1,115 @@
+{
+  "name": "v5",
+  "label": "Editorial Serif",
+  "extends": "_base",
+  "meta": {
+    "description": "A premium magazine feel: large Fraunces headlines, small-caps labels, hairline rules and generous negative space. Fraunces runs at a moderate optical size with healthy weight so strokes stay sturdy over noisy photography.",
+    "tags": ["dark", "serif", "editorial"]
+  },
+
+  "canvas": { "margin": 112 },
+
+  "palette": {
+    "scrim": [18, 19, 23],
+    "text": [236, 231, 221],
+    "dim": [200, 197, 190],
+    "muted": [136, 138, 144],
+    "gold": [214, 174, 106],
+    "gold_hi": [236, 206, 152],
+    "line": [70, 72, 78]
+  },
+
+  "vars": {
+    "TXTW": "W - 2 * MX",
+    "BASE": "H - 150"
+  },
+
+  "type": {
+    "wordmark": { "font": "sans", "weight": "SemiBold", "size": 23, "tracking": 4, "color": "text" },
+    "pagenum": { "font": "sans", "weight": "Medium", "size": 23, "color": "muted" },
+    "handle": { "font": "sans", "weight": "Medium", "size": 23, "color": "muted" },
+    "cue": { "font": "serif", "axes": { "wght": 520 }, "size": 30, "color": "gold_hi" },
+    "kicker": { "font": "sans", "weight": "SemiBold", "size": 24, "tracking": 5, "color": "gold" },
+    "seclabel": { "font": "sans", "weight": "SemiBold", "size": 24, "tracking": 5, "color": "muted" },
+    "title": { "font": "serif", "axes": { "wght": 640, "opsz": 72 }, "size": 96, "leading": 100, "color": "text" },
+    "subtitle": { "font": "sans", "weight": "Regular", "size": 38, "leading": 50, "color": "dim" },
+    "number": { "font": "serif", "axes": { "wght": 420, "opsz": 144 }, "size": 150, "leading": 150, "color": "gold_hi" },
+    "headline": { "font": "serif", "axes": { "wght": 600, "opsz": 60 }, "size": 60, "leading": 72, "color": "text" },
+    "body": { "font": "sans", "weight": "Regular", "size": 38, "leading": 56, "color": "dim" },
+    "question": { "font": "serif", "axes": { "wght": 600, "opsz": 72 }, "size": 66, "leading": 80, "color": "text" },
+    "save": { "font": "sans", "weight": "Regular", "size": 36, "leading": 56, "color": "dim" },
+    "follow": { "font": "serif", "axes": { "wght": 560 }, "size": 46, "color": "gold_hi" }
+  },
+
+  "slides": {
+    "cover": [
+      { "op": "vscrim", "top": 40, "bottom": 230, "note": "strong bottom floor under the serif title" },
+
+      { "op": "measure", "name": "wm", "value": "$wordmark", "type": "wordmark" },
+      { "op": "text", "value": "$wordmark", "type": "wordmark", "x": "MX", "y": 84, "advance": false },
+      { "op": "ellipse", "x": "MX + wm_w + 18", "y": 94, "r": 4, "fill": "gold" },
+      { "op": "rule", "x": "MX", "to": "W - MX", "y": 132, "color": "line", "alpha": 90, "width": 2 },
+
+      { "op": "measure", "name": "t", "value": "$title", "type": "title" },
+      { "op": "measure", "name": "s", "value": "$subtitle", "type": "subtitle" },
+      { "op": "cursor", "to": "BASE - (46 + t_h + 30 + s_h)" },
+
+      { "op": "text", "value": "$badge", "type": "kicker", "uppercase": true,
+        "x": "MX", "y": { "after": 0 }, "leading": 46 },
+      { "op": "text", "value": "$title", "type": "title", "x": "MX", "y": { "after": 0 } },
+      { "op": "rule", "x": "MX", "length": 120, "y": { "after": 8 }, "color": "gold", "alpha": 230, "width": 3 },
+      { "op": "text", "value": "$subtitle", "type": "subtitle", "x": "MX", "y": { "after": 22 } },
+
+      { "op": "text", "value": "$handle", "type": "handle", "x": "MX", "y": "H - 70", "advance": false },
+      { "op": "text", "value": "Scorri", "type": "cue", "x": "MX", "y": "H - 74",
+        "align": "right", "advance": false }
+    ],
+
+    "secret": [
+      { "op": "vscrim", "top": 120, "bottom": 150, "note": "a guaranteed floor across the whole slide" },
+
+      { "op": "measure", "name": "wm", "value": "$wordmark", "type": "wordmark" },
+      { "op": "text", "value": "$wordmark", "type": "wordmark", "x": "MX", "y": 84, "advance": false },
+      { "op": "ellipse", "x": "MX + wm_w + 18", "y": 94, "r": 4, "fill": "gold" },
+      { "op": "text", "value": "{index:02d} — {count:02d}", "type": "pagenum", "x": "MX", "y": 86,
+        "align": "right", "advance": false },
+
+      { "op": "text", "value": "{index:02d}", "type": "number", "x": "MX - 6", "y": 196, "advance": false },
+      { "op": "text", "value": "SEGRETO", "type": "seclabel", "x": "MX + 4", "y": 372, "advance": false },
+      { "op": "rule", "x": "MX", "to": "W - MX", "y": 416, "color": "line", "alpha": 120, "width": 2 },
+
+      { "op": "text", "value": "$headline", "type": "headline", "x": "MX", "y": 466 },
+      { "op": "text", "value": "$body", "type": "body", "x": "MX", "y": { "after": 28 } },
+
+      { "op": "text", "value": "$handle", "type": "handle", "x": "MX", "y": "H - 70", "advance": false },
+      { "op": "text", "value": "Continua", "type": "cue", "x": "MX", "y": "H - 74",
+        "align": "right", "advance": false }
+    ],
+
+    "cta": [
+      { "op": "vscrim", "top": 90, "bottom": 170 },
+
+      { "op": "measure", "name": "wm", "value": "$wordmark", "type": "wordmark" },
+      { "op": "text", "value": "$wordmark", "type": "wordmark", "x": "MX", "y": 84, "advance": false },
+      { "op": "ellipse", "x": "MX + wm_w + 18", "y": 94, "r": 4, "fill": "gold" },
+
+      { "op": "measure", "name": "q", "value": "$question", "type": "question" },
+      { "op": "cursor", "to": "int((H - (40 + q_h + 40 + 44 + 60)) / 2) + 10" },
+
+      { "op": "ellipse", "x": "W / 2", "y": { "after": 5 }, "r": 5, "fill": "gold" },
+      { "op": "cursor", "by": 35 },
+      { "op": "rule", "x": "W / 2 - 90", "to": "W / 2 + 90", "y": { "after": -16 },
+        "color": "gold", "alpha": 200, "width": 2 },
+
+      { "op": "text", "value": "$question", "type": "question", "x": "MX",
+        "y": { "after": 0 }, "align": "center" },
+      { "op": "rule", "x": "W / 2 - 90", "to": "W / 2 + 90", "y": { "after": 24 },
+        "color": "gold", "alpha": 200, "width": 2 },
+
+      { "op": "text", "value": "Salva per la prossima sessione", "type": "save", "x": "MX",
+        "y": { "after": 24 }, "align": "center" },
+      { "op": "text", "value": "Segui {handle}", "type": "follow", "x": "MX",
+        "y": { "after": 0 }, "align": "center" }
+    ]
+  }
+}

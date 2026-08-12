@@ -1,0 +1,26 @@
+# Generated deck output — decks are rebuilt from content.json, never committed.
+decks/
+preview/
+slide_*.png
+bg_*.png
+final_*.jpg
+deck.txt
+caption.txt
+
+# Secrets. The image API key lives here; it must never reach the repo.
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+
+# macOS
+.DS_Store

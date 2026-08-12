@@ -1,0 +1,38 @@
+{
+  "name": "_base",
+  "label": "Base",
+  "meta": {
+    "note": "Shared ground every shipped style extends: slide geometry, the font roles bound to files in fonts/, and the neutral tokens a recipe can always count on. Styles override what they mean to change."
+  },
+
+  "canvas": {
+    "width": 1080,
+    "height": 1350,
+    "margin": 96
+  },
+
+  "fonts": {
+    "sans": { "family": "inter" },
+    "mono": { "family": "spacemono" },
+    "serif": { "family": "fraunces", "axes": { "wght": 620 } }
+  },
+
+  "palette": {
+    "scrim": [21, 23, 28],
+    "text": [236, 231, 221],
+    "muted": [138, 144, 152],
+    "accent": [232, 163, 61],
+    "line": [42, 45, 53]
+  },
+
+  "vars": {
+    "TXTW": "W - 2 * MX"
+  },
+
+  "type": {
+    "body": { "font": "sans", "weight": "Regular", "size": 38, "leading": 56, "color": "text" },
+    "label": { "font": "sans", "weight": "Medium", "size": 25, "color": "muted" }
+  },
+
+  "slides": {}
+}

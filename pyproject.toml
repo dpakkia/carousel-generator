@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "carousel-generator"
+version = "1.0.0"
+description = "Data-driven Instagram carousel generator: copy in one JSON, look in another."
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = ["Pillow>=10.0"]
+
+[project.optional-dependencies]
+plates = ["openai>=1.40"]
+
+[project.scripts]
+carousel = "carousel.cli:main"
+
+[tool.setuptools]
+packages = ["carousel", "carousel.ops"]
+
+[tool.setuptools.package-data]
+carousel = ["styles/*.json"]

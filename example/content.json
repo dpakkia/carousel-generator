@@ -1,0 +1,39 @@
+{
+  "name": "luce-naturale-ritratti",
+
+  "title": "4 segreti per ritratti in luce naturale",
+  "subtitle": "senza flash, senza pannelli",
+  "badge": "4 SEGRETI",
+
+  "secrets": [
+    [
+      "Cerca l'ombra, non il sole",
+      "Mettiti **all'ombra aperta** (un portico, il lato nord di un muro): la luce arriva morbida e uniforme, e gli occhi smettono di socchiudersi."
+    ],
+    [
+      "Esponi per le alte luci",
+      "Scendi di **-0,7 EV** e salva le zone chiare. Recuperare un'ombra in post costa poco rumore, recuperare una guancia bruciata non si può."
+    ],
+    [
+      "Usa il muro come pannello",
+      "Piazza il soggetto a **un metro** da una parete chiara e falla lavorare come riflettore: riempie le ombre sotto gli occhi senza attrezzatura."
+    ],
+    [
+      "Chiudi a f/2.8, non a f/1.2",
+      "A tutta apertura resta a fuoco **solo una ciglia**. Con f/2.8 tieni entrambi gli occhi nitidi e lo sfondo resta comunque sfocato."
+    ]
+  ],
+
+  "cta_q": "Qual è il posto dove torni sempre a fotografare?",
+
+  "image_prompts": [
+    "Cinematic portrait scene, open shade under a stone portico, warm bounce light, dark moody background, shallow depth of field, film grain, no faces visible",
+    "Close detail of soft window light falling across a textured wall, deep shadows, warm amber highlights, cinematic, film grain",
+    "Camera LCD histogram glow in a dim room, highlights protected, moody, cinematic still life, film grain",
+    "Pale plaster wall bouncing warm light into shadow, minimal, architectural detail, cinematic, film grain",
+    "Shallow depth of field detail of a lens aperture ring at f/2.8, dark background, warm rim light, film grain",
+    "Quiet golden-hour location, empty and atmospheric, long shadows, cinematic wide shot, film grain"
+  ],
+
+  "caption": "4 segreti per ritratti in luce naturale, senza flash e senza pannelli.\n\nLa luce migliore è quasi sempre quella che non devi costruire: ti basta sapere dove metterti.\n\nSalva il carosello per la prossima sessione, e dimmi nei commenti qual è il posto dove torni sempre a fotografare.\n\n#fotografia #ritratto #lucenaturale #fotografiaitaliana"
+}

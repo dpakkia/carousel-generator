@@ -1,0 +1,117 @@
+{
+  "name": "v3",
+  "label": "Bold Poster",
+  "extends": "_base",
+  "meta": {
+    "description": "Oversized type anchored to the foot, giant outline numerals, an ember accent bar.",
+    "tags": ["dark", "warm", "poster"]
+  },
+
+  "canvas": { "margin": 84 },
+
+  "palette": {
+    "scrim": [21, 23, 28],
+    "text": [240, 236, 228],
+    "dim": [206, 201, 192],
+    "muted": [140, 146, 152],
+    "amber": [240, 176, 72],
+    "amber_hi": [250, 206, 132],
+    "ember": [226, 98, 64],
+    "ink": [18, 19, 22],
+    "line": [44, 47, 55]
+  },
+
+  "vars": {
+    "TXTW": "W - 2 * MX",
+    "BASE": "H - 150"
+  },
+
+  "type": {
+    "wordmark": { "font": "sans", "weight": "SemiBold", "size": 25, "tracking": 3, "color": "text" },
+    "pagenum": { "font": "sans", "weight": "Medium", "size": 25, "color": "muted" },
+    "handle": { "font": "sans", "weight": "Medium", "size": 24, "color": "muted" },
+    "badge": { "font": "sans", "weight": "SemiBold", "size": 26, "tracking": 1, "color": "ink" },
+    "title": { "font": "sans", "weight": "Black", "size": 100, "leading": 102, "color": "text" },
+    "subtitle": { "font": "sans", "weight": "Medium", "size": 40, "leading": 50, "color": "amber_hi" },
+    "cue": { "font": "sans", "weight": "SemiBold", "size": 30, "color": "muted" },
+    "number": { "font": "sans", "weight": "Black", "size": 250, "leading": 250,
+                "color": null, "stroke_width": 3, "stroke_color": "amber" },
+    "headline": { "font": "sans", "weight": "Black", "size": 64, "leading": 74, "color": "text" },
+    "body": { "font": "sans", "weight": "Regular", "size": 38, "leading": 56, "color": "dim" },
+    "arrow": { "font": "sans", "weight": "Bold", "size": 40, "color": "amber" },
+    "question": { "font": "sans", "weight": "Black", "size": 72, "leading": 84, "color": "text" },
+    "save": { "font": "sans", "weight": "Medium", "size": 40, "leading": 64, "color": "dim" },
+    "follow": { "font": "sans", "weight": "Bold", "size": 48, "color": "amber_hi" }
+  },
+
+  "slides": {
+    "cover": [
+      { "op": "vscrim", "top": 20, "bottom": 235, "note": "heavy bottom weight under the big type" },
+
+      { "op": "rect", "box": ["MX", 88, "MX + 18", 106], "fill": "amber" },
+      { "op": "text", "value": "$wordmark", "type": "wordmark", "x": "MX + 32", "y": 84, "advance": false },
+
+      { "op": "measure", "name": "t", "value": "$title", "type": "title" },
+      { "op": "measure", "name": "s", "value": "$subtitle", "type": "subtitle" },
+      { "op": "cursor", "to": "BASE - (60 + 24 + t_h + 14 + s_h)" },
+
+      { "op": "pill", "value": "$badge", "type": "badge", "uppercase": true,
+        "x": "MX", "y": { "after": 0 }, "fill": "amber", "radius": 10,
+        "height": 56, "pad_x": 26, "pad_y": 13, "advance": false },
+      { "op": "cursor", "by": 84 },
+
+      { "op": "text", "value": "$title", "type": "title", "x": "MX", "y": { "after": 0 } },
+      { "op": "text", "value": "$subtitle", "type": "subtitle", "x": "MX", "y": { "after": 14 } },
+
+      { "op": "rect", "box": ["MX", "BASE + 18", "MX + 132", "BASE + 26"], "fill": "ember",
+        "note": "the ember accent bar — v3's signature mark" },
+      { "op": "text", "value": "Scorri →", "type": "cue", "x": "MX", "y": "BASE + 2",
+        "align": "right", "advance": false }
+    ],
+
+    "secret": [
+      { "op": "vscrim", "top": 70, "bottom": 210 },
+
+      { "op": "rect", "box": ["MX", 88, "MX + 18", 106], "fill": "amber" },
+      { "op": "text", "value": "$wordmark", "type": "wordmark", "x": "MX + 32", "y": 84, "advance": false },
+      { "op": "text", "value": "{index:02d} / {count:02d}", "type": "pagenum", "x": "MX", "y": 86,
+        "align": "right", "advance": false },
+
+      { "op": "text", "value": "{index:02d}", "type": "number", "x": "MX - 8", "y": 120,
+        "advance": false, "note": "hollow numeral: no fill, amber stroke only" },
+
+      { "op": "measure", "name": "h", "value": "$headline", "type": "headline" },
+      { "op": "measure", "name": "b", "value": "$body", "type": "body" },
+      { "op": "cursor", "to": "BASE - (h_h + 28 + b_h)" },
+
+      { "op": "rect", "box": ["MX", "cursor - 30", "MX + 96", "cursor - 22"], "fill": "ember" },
+      { "op": "text", "value": "$headline", "type": "headline", "x": "MX", "y": { "after": 0 } },
+      { "op": "text", "value": "$body", "type": "body", "x": "MX", "y": { "after": 28 } },
+
+      { "op": "text", "value": "$handle", "type": "handle", "x": "MX", "y": "H - 64", "advance": false },
+      { "op": "text", "value": "→", "type": "arrow", "x": "MX", "y": "H - 78",
+        "align": "right", "advance": false }
+    ],
+
+    "cta": [
+      { "op": "vscrim", "top": 150, "bottom": 210 },
+
+      { "op": "rect", "box": ["MX", 88, "MX + 18", 106], "fill": "amber" },
+      { "op": "text", "value": "$wordmark", "type": "wordmark", "x": "MX + 32", "y": 84, "advance": false },
+
+      { "op": "measure", "name": "q", "value": "$question", "type": "question" },
+      { "op": "cursor", "to": "int((H - (70 + q_h + 44 + 56 + 64)) / 2) + 30" },
+
+      { "op": "rect", "box": ["(W - 160) / 2", "cursor", "(W + 160) / 2", "cursor + 12"],
+        "fill": "ember", "note": "an ember bar carries the CTA instead of a spark cluster" },
+      { "op": "cursor", "by": 60 },
+
+      { "op": "text", "value": "$question", "type": "question", "x": "MX",
+        "y": { "after": 0 }, "align": "center" },
+      { "op": "text", "value": "Salva per la prossima sessione", "type": "save",
+        "x": "MX", "y": { "after": 44 }, "align": "center" },
+      { "op": "text", "value": "Segui {handle}", "type": "follow",
+        "x": "MX", "y": { "after": 0 }, "align": "center" }
+    ]
+  }
+}

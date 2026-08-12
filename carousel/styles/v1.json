@@ -1,0 +1,102 @@
+{
+  "name": "v1",
+  "label": "Forge Glow",
+  "extends": "_base",
+  "meta": {
+    "description": "Amber bloom on charcoal, giant numerals, the brand spark. The default look.",
+    "tags": ["dark", "warm", "editorial"]
+  },
+
+  "palette": {
+    "scrim": [21, 23, 28],
+    "text": [236, 231, 221],
+    "dim": [200, 196, 186],
+    "muted": [138, 144, 152],
+    "amber": [232, 163, 61],
+    "amber_hi": [244, 199, 122],
+    "teal": [63, 182, 168],
+    "line": [42, 45, 53]
+  },
+
+  "type": {
+    "wordmark": { "font": "sans", "weight": "SemiBold", "size": 25, "tracking": 3, "color": "text" },
+    "pagenum": { "font": "sans", "weight": "Medium", "size": 25, "color": "muted" },
+    "handle": { "font": "sans", "weight": "Medium", "size": 24, "color": "muted" },
+    "badge": { "font": "sans", "weight": "SemiBold", "size": 26, "color": "amber_hi" },
+    "title": { "font": "sans", "weight": "Black", "size": 92, "leading": 104, "color": "text" },
+    "subtitle": { "font": "sans", "weight": "Medium", "size": 40, "leading": 50, "color": "amber" },
+    "cue": { "font": "sans", "weight": "SemiBold", "size": 30, "color": "muted" },
+    "number": { "font": "sans", "weight": "Black", "size": 150, "leading": 150, "color": "amber" },
+    "headline": { "font": "sans", "weight": "Bold", "size": 58, "leading": 70, "color": "text" },
+    "body": { "font": "sans", "weight": "Regular", "size": 38, "leading": 56, "color": "dim" },
+    "arrow": { "font": "sans", "weight": "Bold", "size": 40, "color": "amber" },
+    "question": { "font": "sans", "weight": "Bold", "size": 62, "leading": 76, "color": "text" },
+    "save": { "font": "sans", "weight": "Medium", "size": 40, "leading": 70, "color": "dim" },
+    "follow": { "font": "sans", "weight": "SemiBold", "size": 46, "color": "amber_hi" }
+  },
+
+  "slides": {
+    "cover": [
+      { "op": "vscrim", "top": 60, "bottom": 205, "note": "light at top, dark over the title block" },
+      { "op": "glow", "x": 250, "y": 230, "r": 360, "color": "teal", "alpha": 26 },
+      { "op": "glow", "x": 560, "y": 1000, "r": 540, "color": "amber", "alpha": 60 },
+
+      { "op": "spark", "x": "MX + 7", "y": 103, "r": 10, "color": "amber" },
+      { "op": "text", "value": "$wordmark", "type": "wordmark", "x": "MX + 28", "y": 88, "advance": false },
+
+      { "op": "pill", "value": "$badge", "type": "badge", "x": "MX", "y": 560,
+        "outline": "amber", "radius": 28, "height": 56, "pad_x": 28, "pad_y": 13, "advance": false },
+
+      { "op": "text", "value": "$title", "type": "title", "x": "MX", "y": 670 },
+      { "op": "text", "value": "$subtitle", "type": "subtitle", "x": "MX", "y": { "after": 16 } },
+
+      { "op": "text", "value": "Scorri →", "type": "cue", "x": "MX", "y": "H - 96",
+        "align": "right", "advance": false }
+    ],
+
+    "secret": [
+      { "op": "vscrim", "top": 200, "bottom": 70, "note": "dark over the number and copy, easing to the foot" },
+      { "op": "glow", "x": 990, "y": 1180, "r": 340, "color": "amber", "alpha": 26 },
+
+      { "op": "spark", "x": "MX + 7", "y": 103, "r": 10, "color": "amber" },
+      { "op": "text", "value": "$wordmark", "type": "wordmark", "x": "MX + 28", "y": 88, "advance": false },
+      { "op": "text", "value": "{index:02d} / {count:02d}", "type": "pagenum", "x": "MX", "y": 90,
+        "align": "right", "advance": false },
+
+      { "op": "text", "value": "{index:02d}", "type": "number", "x": "MX - 4", "y": 150, "advance": false },
+      { "op": "rule", "x": "MX", "y": 330, "length": 96, "color": "amber", "width": 4 },
+
+      { "op": "text", "value": "$headline", "type": "headline", "x": "MX", "y": 372 },
+      { "op": "text", "value": "$body", "type": "body", "x": "MX", "y": { "after": 30 } },
+
+      { "op": "text", "value": "$handle", "type": "handle", "x": "MX", "y": "H - 64", "advance": false },
+      { "op": "text", "value": "→", "type": "arrow", "x": "MX", "y": "H - 78",
+        "align": "right", "advance": false }
+    ],
+
+    "cta": [
+      { "op": "glow", "x": 540, "y": 540, "r": 560, "color": "amber", "alpha": 80 },
+      { "op": "glow", "x": 540, "y": 540, "r": 240, "color": "amber_hi", "alpha": 70 },
+      { "op": "rscrim", "x": 540, "y": 820, "r": 600, "alpha": 190,
+        "note": "darken behind the question, leave the spark bloom bright" },
+
+      { "op": "spark", "x": "MX + 7", "y": 103, "r": 10, "color": "amber" },
+      { "op": "text", "value": "$wordmark", "type": "wordmark", "x": "MX + 28", "y": 88, "advance": false },
+
+      { "op": "spark", "x": 540, "y": 470, "r": 50, "color": "amber_hi" },
+      { "op": "sparks", "color": "amber", "at": [
+        { "x": 390, "y": 410, "r": 9 },
+        { "x": 700, "y": 440, "r": 11 },
+        { "x": 420, "y": 550, "r": 7 },
+        { "x": 680, "y": 560, "r": 8 },
+        { "x": 540, "y": 320, "r": 7 }
+      ] },
+
+      { "op": "text", "value": "$question", "type": "question", "x": "MX", "y": 640, "align": "center" },
+      { "op": "text", "value": "Salva per la prossima sessione", "type": "save", "x": "MX",
+        "y": { "after": 46 }, "align": "center" },
+      { "op": "text", "value": "Segui {handle}", "type": "follow", "x": "MX",
+        "y": { "after": 0 }, "align": "center" }
+    ]
+  }
+}

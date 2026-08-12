@@ -1,0 +1,124 @@
+{
+  "name": "v2",
+  "label": "Editorial Panel",
+  "extends": "_base",
+  "meta": {
+    "description": "A frosted translucent card holds the copy: teal-led, lighter type, plenty of air.",
+    "tags": ["dark", "cool", "editorial"]
+  },
+
+  "canvas": { "margin": 96 },
+
+  "palette": {
+    "scrim": [21, 23, 28],
+    "panel": [16, 18, 23],
+    "text": [236, 231, 221],
+    "dim": [196, 199, 198],
+    "muted": [132, 140, 146],
+    "teal": [74, 196, 180],
+    "teal_hi": [138, 222, 210],
+    "gold": [224, 178, 96],
+    "line": [44, 50, 56]
+  },
+
+  "vars": {
+    "TXTW": "W - 2 * MX",
+    "PAD": 52,
+    "COL": "W - 2 * MX - 2 * 52",
+    "X0": 56,
+    "X1": "W - 56"
+  },
+
+  "type": {
+    "wordmark": { "font": "sans", "weight": "SemiBold", "size": 25, "tracking": 3, "color": "text" },
+    "pagenum": { "font": "sans", "weight": "Medium", "size": 25, "color": "muted" },
+    "handle": { "font": "sans", "weight": "Medium", "size": 24, "color": "muted" },
+    "kicker": { "font": "sans", "weight": "SemiBold", "size": 24, "tracking": 4, "color": "teal" },
+    "title": { "font": "sans", "weight": "Bold", "size": 82, "leading": 92, "color": "text" },
+    "subtitle": { "font": "sans", "weight": "Medium", "size": 38, "leading": 48, "color": "dim" },
+    "cue": { "font": "sans", "weight": "SemiBold", "size": 30, "color": "muted" },
+    "number": { "font": "sans", "weight": "SemiBold", "size": 30, "tracking": 2, "color": "teal_hi" },
+    "headline": { "font": "sans", "weight": "SemiBold", "size": 54, "leading": 64, "color": "text" },
+    "body": { "font": "sans", "weight": "Regular", "size": 37, "leading": 54, "color": "dim" },
+    "arrow": { "font": "sans", "weight": "Bold", "size": 38, "color": "teal" },
+    "question": { "font": "sans", "weight": "Bold", "size": 60, "leading": 74, "color": "text" },
+    "save": { "font": "sans", "weight": "Medium", "size": 38, "leading": 60, "color": "dim" },
+    "follow": { "font": "sans", "weight": "SemiBold", "size": 44, "color": "teal_hi" }
+  },
+
+  "slides": {
+    "cover": [
+      { "op": "vscrim", "top": 30, "bottom": 130 },
+
+      { "op": "measure", "name": "t", "value": "$title", "type": "title", "width": "COL" },
+      { "op": "measure", "name": "s", "value": "$subtitle", "type": "subtitle", "width": "COL" },
+      { "op": "cursor", "to": "H - 132 - (32 + 30 + t_h + 20 + s_h) - 2 * PAD",
+        "note": "panel top: the card grows upward from a fixed foot" },
+
+      { "op": "panel", "box": ["X0", "cursor", "X1", "H - 132"],
+        "color": "panel", "alpha": 212, "radius": 36, "outline": "line", "width": 2 },
+
+      { "op": "ellipse", "x": "MX + 8", "y": 102, "r": 8, "fill": "teal" },
+      { "op": "text", "value": "$wordmark", "type": "wordmark", "x": "MX + 30", "y": 88, "advance": false },
+
+      { "op": "text", "value": "$badge", "type": "kicker", "uppercase": true,
+        "x": "X0 + PAD", "y": { "after": "PAD" }, "width": "COL", "leading": 62 },
+      { "op": "text", "value": "$title", "type": "title", "x": "X0 + PAD", "y": { "after": 0 }, "width": "COL" },
+      { "op": "text", "value": "$subtitle", "type": "subtitle", "x": "X0 + PAD", "y": { "after": 20 }, "width": "COL" },
+
+      { "op": "text", "value": "Scorri →", "type": "cue", "x": "MX", "y": "H - 92",
+        "align": "right", "advance": false }
+    ],
+
+    "secret": [
+      { "op": "vscrim", "top": 96, "bottom": 120 },
+
+      { "op": "measure", "name": "h", "value": "$headline", "type": "headline", "width": "COL" },
+      { "op": "measure", "name": "b", "value": "$body", "type": "body", "width": "COL" },
+
+      { "op": "panel", "box": ["X0", 318, "X1", "318 + (56 + h_h + 26 + b_h) + 2 * PAD"],
+        "color": "panel", "alpha": 212, "radius": 36, "outline": "line", "width": 2 },
+
+      { "op": "ellipse", "x": "MX + 8", "y": 102, "r": 8, "fill": "teal" },
+      { "op": "text", "value": "$wordmark", "type": "wordmark", "x": "MX + 30", "y": 88, "advance": false },
+      { "op": "text", "value": "{index:02d} / {count:02d}", "type": "pagenum", "x": "MX", "y": 90,
+        "align": "right", "advance": false },
+
+      { "op": "text", "value": "{index:02d}", "type": "number", "x": "X0 + PAD", "y": "318 + PAD",
+        "leading": 56, "advance": true },
+      { "op": "line", "x1": "X0 + PAD + 52", "y1": "318 + PAD + 22", "x2": "X1 - PAD",
+        "y2": "318 + PAD + 22", "color": "line", "width": 2 },
+
+      { "op": "text", "value": "$headline", "type": "headline", "x": "X0 + PAD", "y": { "after": 0 }, "width": "COL" },
+      { "op": "text", "value": "$body", "type": "body", "x": "X0 + PAD", "y": { "after": 26 }, "width": "COL" },
+
+      { "op": "text", "value": "$handle", "type": "handle", "x": "MX", "y": "H - 64", "advance": false },
+      { "op": "text", "value": "→", "type": "arrow", "x": "MX", "y": "H - 76",
+        "align": "right", "advance": false }
+    ],
+
+    "cta": [
+      { "op": "vscrim", "top": 60, "bottom": 150 },
+
+      { "op": "measure", "name": "q", "value": "$question", "type": "question", "width": "COL" },
+      { "op": "cursor", "to": "int((H - ((64 + q_h + 40 + 56 + 64) + 2 * PAD)) / 2) + 40" },
+
+      { "op": "panel", "box": ["X0", "cursor", "X1", "cursor + (64 + q_h + 40 + 56 + 64) + 2 * PAD"],
+        "color": "panel", "alpha": 212, "radius": 36, "outline": "line", "width": 2 },
+
+      { "op": "ellipse", "x": "MX + 8", "y": 102, "r": 8, "fill": "teal" },
+      { "op": "text", "value": "$wordmark", "type": "wordmark", "x": "MX + 30", "y": 88, "advance": false },
+
+      { "op": "ellipse", "x": "W / 2", "y": "cursor + PAD + 24", "r": 26, "outline": "teal", "width": 3 },
+      { "op": "polygon", "x": "W / 2", "y": "cursor + PAD + 24", "r": 9, "sides": 4,
+        "rotation": 45, "fill": "teal_hi" },
+
+      { "op": "text", "value": "$question", "type": "question", "x": "X0 + PAD",
+        "y": { "after": "PAD + 70" }, "width": "COL", "align": "center" },
+      { "op": "text", "value": "Salva per la prossima sessione", "type": "save",
+        "x": "X0 + PAD", "y": { "after": 40 }, "width": "COL", "align": "center" },
+      { "op": "text", "value": "Segui {handle}", "type": "follow",
+        "x": "X0 + PAD", "y": { "after": 0 }, "width": "COL", "align": "center" }
+    ]
+  }
+}
