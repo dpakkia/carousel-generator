@@ -52,16 +52,25 @@ def load(name=None):
     return strings
 
 
-def resolve(name, data, overrides=None):
+def resolve(name, data, style_strings=None, deck_strings=None):
     """Locale strings with `{handle}`-style placeholders already filled in.
 
-    Resolved once per slide against the deck's own data, so a style can write
-    `$follow` and get "Follow @you" without knowing the language or the handle.
-    A deck may override any individual string via its own `strings` block.
+    Three layers, each overriding the last:
+
+      style   defaults for words a style invented — v7's viewfinder HUD prop,
+              say — which no locale file can be expected to know about
+      locale  the universal chrome, translated
+      deck    the final say, for a brand that words things its own way
+
+    The locale sits *above* the style deliberately: anything genuinely
+    translatable belongs in a locale file, and adding it there should win over
+    a style's English placeholder rather than lose to it.
     """
-    strings = dict(load(name))
-    if overrides:
-        strings.update({k: v for k, v in overrides.items() if isinstance(v, str)})
+    strings = {}
+    for layer in (style_strings, load(name), deck_strings):
+        if layer:
+            strings.update({k: v for k, v in layer.items()
+                            if isinstance(v, str) and not k.startswith("_")})
 
     out = {}
     for key, value in strings.items():

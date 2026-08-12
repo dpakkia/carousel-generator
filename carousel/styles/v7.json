@@ -9,6 +9,11 @@
 
   "image_style": "Technical and precise, cool neutral tones, clean geometry and clear structure, controlled light against a dark background, fine grain, instructional photography.",
 
+  "strings": {
+    "_note": "Viewfinder furniture: a prop that belongs to this look, not to any brand's language. A locale file or a deck overrides it.",
+    "focus_lock": "FOCUS · LOCK"
+  },
+
   "canvas": { "margin": 84 },
 
   "palette": {

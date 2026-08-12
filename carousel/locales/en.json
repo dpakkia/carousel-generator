@@ -1,5 +1,5 @@
 {
-  "_note": "Slide chrome — the fixed words a style draws around your copy. Styles reference these as $scroll, $save, {figure} and so on, so one file re-languages every style at once. Copy this to add a language; a deck selects it with \"locale\": \"<name>\".",
+  "_note": "Universal slide chrome — the fixed words a style draws around your copy. Keep this brand-neutral: it is inherited by every style and every deck. Anything specific to one look belongs in that style's own \"strings\" block; anything specific to one brand belongs in that deck's. Copy this file to add a language, keeping every key; a deck selects it with \"locale\": \"<name>\".",
 
   "scroll": "Swipe →",
   "scroll_caps": "SWIPE →",
@@ -14,7 +14,6 @@
   "section": "POINT",
   "figure": "FIG.",
   "number_abbr": "NO.",
-  "focus_lock": "FOCUS · LOCK",
 
   "badge_unit": "POINTS",
   "deck_fallback": "deck"

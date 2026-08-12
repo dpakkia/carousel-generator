@@ -144,13 +144,21 @@ so one file re-languages all seven at once.
 { "locale": "it" }
 ```
 
-English and Italian ship. To add a language, copy `carousel/locales/en.json`,
-translate the values and keep every key — every style speaks it immediately. A
-deck can also override a single string without a new file:
+English and Italian ship, deliberately brand-neutral. To add a language, copy
+`carousel/locales/en.json`, translate the values and keep every key — every
+style speaks it immediately.
+
+A deck can override any single string without a new file, which is how a brand
+keeps its own vocabulary:
 
 ```json
-{ "locale": "en", "strings": { "save": "Pin this for later" } }
+{ "locale": "it", "strings": { "section": "SEGRETO" } }
 ```
+
+Words a *style* invented — v7's viewfinder HUD, for instance — live in that
+style's own `strings`. So chrome resolves **style → locale → deck**, nearest
+wins, with the locale above the style because anything translatable belongs in a
+locale file.
 
 Brand works the same way. `handle` and `wordmark` on the deck are what a style
 prints as the account mark; set them per deck when one install serves several

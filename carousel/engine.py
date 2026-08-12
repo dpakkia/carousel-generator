@@ -98,7 +98,8 @@ def _run(ctx, spec, style, kind, index):
             f"(op {spec['op']!r}): {e}") from e
 
 
-def slide_data(content, kind, number=None, index=None, count=None, total=None):
+def slide_data(content, kind, number=None, index=None, count=None,
+               total=None, style=None):
     """Everything a recipe can reference: the deck's copy, the brand, the chrome.
 
     Deck fields are `$title`, `$headline`, `{index:02d}`…; the fixed words a
@@ -127,10 +128,11 @@ def slide_data(content, kind, number=None, index=None, count=None, total=None):
         data["headline"] = headline
         data["body"] = body
 
-    # Chrome last: it may interpolate the brand fields above, and a deck's own
-    # `strings` block wins over the language file.
+    # Chrome last: it may interpolate the brand fields above. Style defaults
+    # sit under the locale, the deck's own `strings` block over it.
     data.update(locales.resolve(content.get("locale"), data,
-                                content.get("strings")))
+                                style_strings=getattr(style, "strings", None),
+                                deck_strings=content.get("strings")))
     return data
 
 
@@ -141,12 +143,12 @@ def render_deck(style, content):
     style = apply_variant(style, content)
 
     images = [render_slide(style, "cover",
-                           slide_data(content, "cover", 1, total=total))]
+                           slide_data(content, "cover", 1, total=total, style=style))]
     for i, _ in enumerate(secrets, start=1):
-        images.append(render_slide(
-            style, "secret", slide_data(content, "secret", i + 1, i, len(secrets), total)))
-    images.append(render_slide(style, "cta",
-                               slide_data(content, "cta", total, total=total)))
+        images.append(render_slide(style, "secret", slide_data(
+            content, "secret", i + 1, i, len(secrets), total, style=style)))
+    images.append(render_slide(style, "cta", slide_data(
+        content, "cta", total, total=total, style=style)))
     return images
 
 

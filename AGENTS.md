@@ -64,7 +64,8 @@ Requirements for a style to be considered done:
 - **No literal chrome.** Words like "Swipe →" or "Follow @you" come from
   `carousel/locales/`, referenced as `$scroll`, `$follow`. A test fails the
   build if a recipe hardcodes one, because a literal is invisible to
-  translation.
+  translation. A word your look *invented* — a fake HUD readout, say — goes in
+  the style's own `strings` block, where a locale can still override it.
 - **No fixed coordinates for text that can grow.** Use `measure` and the layout
   cursor so a long title pushes what follows down instead of overlapping it.
 - **Colours by palette name**, never raw RGB inside a recipe.
@@ -158,6 +159,22 @@ Do not regenerate the whole set to paper over a shift. That spends money to
 destroy art direction you already had.
 
 ---
+
+## Keeping brand out of the core
+
+The tool ships with one brand's decks as an example, and its vocabulary leaks
+easily. It has already happened once: the Italian locale carried `SEGRETO`,
+`SEGRETI` and "per la prossima sessione" — a photo *shoot* session — so a
+car-care account rendering in Italian got photography jargon it never asked for.
+
+- **Locale files hold universal chrome only.** They are inherited by every style
+  and every deck. A test fails the build if one picks up brand vocabulary.
+- **Brand wording goes in the deck's `strings`.** That is how
+  `examples/scintilla-visiva/` keeps `SEGRETO` without imposing it on anyone.
+- **Style furniture goes in the style's `strings`.** Decorative props belong to
+  the look.
+- The same applies to `image_style`, `handle` and `wordmark`: deck first, style
+  second, config last.
 
 ## Hard rules
 

@@ -345,6 +345,50 @@ class TestLocales(unittest.TestCase):
         self.assertEqual(data["save"], "Pin this")
         self.assertEqual(data["scroll"], "Swipe →", "other strings untouched")
 
+    def test_locales_stay_brand_neutral(self):
+        """A locale is inherited by every brand, so it must not carry one
+        brand's vocabulary. This shipped wrong once: the Italian file used the
+        author's own photography framing (SEGRETO, "per la prossima sessione"),
+        which read as nonsense for, say, a car-care account."""
+        leaked = []
+        for name in locales.available():
+            blob = " ".join(locales.load(name).values()).lower()
+            for word in ("segreto", "segreti", "sessione", "fuoco", "scatto",
+                         "obiettivo", "photo", "shoot", "camera"):
+                if word in blob:
+                    leaked.append(f"{name}.json: {word}")
+        self.assertEqual(leaked, [],
+                         "locale files must not carry one brand's vocabulary")
+
+    def test_a_style_supplies_defaults_for_words_it_invented(self):
+        """v7's viewfinder HUD is a prop of the look, not anyone's language."""
+        self.assertIn("focus_lock", Style.load("v7").strings)
+        for name in locales.available():
+            self.assertNotIn("focus_lock", locales.load(name),
+                             "style furniture should not sit in a locale")
+
+    def test_the_three_layers_resolve_nearest_wins(self):
+        style = Style.load("v7")
+        base = engine.slide_data(dict(DECK, locale="it"), "cta", 5,
+                                 total=5, style=style)
+        self.assertEqual(base["section"], "PUNTO", "locale supplies the word")
+        self.assertEqual(base["focus_lock"], "FOCUS · LOCK", "style default")
+
+        pinned = engine.slide_data(
+            dict(DECK, locale="it", strings={"section": "SEGRETO",
+                                             "focus_lock": "FUOCO · BLOCCO"}),
+            "cta", 5, total=5, style=style)
+        self.assertEqual(pinned["section"], "SEGRETO", "deck beats locale")
+        self.assertEqual(pinned["focus_lock"], "FUOCO · BLOCCO", "deck beats style")
+
+    def test_a_locale_beats_a_style_default(self):
+        """Anything translatable belongs in a locale, so adding it there wins."""
+        style = Style.load("v7")
+        style.strings = {"scroll": "STYLE-DEFAULT"}
+        data = engine.slide_data(dict(DECK, locale="it"), "cta", 5,
+                                 total=5, style=style)
+        self.assertEqual(data["scroll"], "Scorri →")
+
     def test_unknown_language_is_reported(self):
         with self.assertRaises(locales.LocaleError):
             locales.load("klingon")

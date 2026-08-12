@@ -149,7 +149,7 @@ def from_markdown(text, locale=None):
 
 
 def badge_for(count, locale=None):
-    """"5 POINTS" / "5 SEGRETI" — the cover marker, in the deck's language."""
+    """"5 POINTS" / "5 PUNTI" — the cover marker, in the deck's language."""
     return f"{count} {locales.load(locale)['badge_unit']}"
 
 

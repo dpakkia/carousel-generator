@@ -108,7 +108,7 @@ def pill(ctx, value=None, type="label", x=None, y=None, color=None,
          width=None, advance=True, uppercase=False, **_):
     """A badge: a rounded box sized to its own text.
 
-    Used for the "5 SEGRETI" cover marker. `fill` paints it solid, `outline`
+    Used for the "5 POINTS" cover marker. `fill` paints it solid, `outline`
     draws it as a hairline pill; give both for a filled pill with a border.
     """
     body = ctx.text_value(value)

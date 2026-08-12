@@ -21,7 +21,8 @@ from .config import W as DEFAULT_W, H as DEFAULT_H
 STYLE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "styles")
 
 # Merged as dictionaries when a style extends another; anything else is replaced.
-_MERGE_KEYS = ("canvas", "palette", "fonts", "type", "vars", "slides", "meta")
+_MERGE_KEYS = ("canvas", "palette", "fonts", "type", "vars", "slides",
+               "meta", "strings")
 
 
 class StyleError(ValueError):
@@ -51,6 +52,11 @@ class Style:
         # photography behind it are one decision, so a style may carry its own;
         # a deck can still override, and config supplies the fallback.
         self.image_style = data.get("image_style")
+
+        # Words this style invented — decorative furniture that is part of the
+        # look rather than of any brand's language. A locale file overrides
+        # them, so anything genuinely translatable still belongs in a locale.
+        self.strings = data.get("strings", {})
 
     # ----------------------------------------------------------------- loading
     @classmethod

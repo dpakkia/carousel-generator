@@ -104,7 +104,7 @@ una riga sfora il budget della sua slide *prima* che tu ci costruisca sopra.
 
   "title": "4 segreti per ritratti in luce naturale",
   "subtitle": "senza flash, senza pannelli",
-  "badge": "4 SEGRETI",
+  "badge": "4 PUNTI",
   "secrets": [
     ["Cerca l'ombra, non il sole", "Mettiti **all'ombra aperta**: la luce arriva morbida."]
   ],
@@ -147,14 +147,21 @@ tutti e sette insieme.
 { "locale": "it" }
 ```
 
-Inglese e italiano sono già inclusi. Per aggiungere una lingua copia
-`carousel/locales/en.json`, traduci i valori e tieni tutte le chiavi: ogni stile
-la parla subito. Un deck può anche scavalcare una singola stringa senza creare un
-file nuovo:
+Inglese e italiano sono già inclusi, e volutamente neutri rispetto al brand. Per
+aggiungere una lingua copia `carousel/locales/en.json`, traduci i valori e tieni
+tutte le chiavi: ogni stile la parla subito.
+
+Un deck può scavalcare qualsiasi stringa senza creare un file nuovo, ed è così
+che un brand mantiene il proprio lessico:
 
 ```json
-{ "locale": "it", "strings": { "save": "Salvalo per dopo" } }
+{ "locale": "it", "strings": { "section": "SEGRETO" } }
 ```
+
+Le parole inventate da uno *stile* — l'HUD da mirino di v7, per dire — stanno
+nel blocco `strings` di quello stile. Quindi i testi si risolvono
+**stile → lingua → deck**, vince il più vicino, con la lingua sopra lo stile
+perché tutto ciò che è traducibile appartiene a un file di lingua.
 
 Il brand funziona allo stesso modo. `handle` e `wordmark` nel deck sono quello
 che lo stile stampa come firma: impostali per deck quando la stessa

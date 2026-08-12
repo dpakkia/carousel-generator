@@ -1,21 +1,20 @@
 {
-  "_note": "Testi fissi delle slide — le parole che uno stile disegna intorno al tuo contenuto. Gli stili le richiamano come $scroll, $save, {figure}: cambiando questo file cambi la lingua di tutti gli stili insieme. Un deck la sceglie con \"locale\": \"it\".",
+  "_note": "Testi fissi universali delle slide — le parole che uno stile disegna intorno al tuo contenuto. Tienile neutre rispetto al brand: le ereditano tutti gli stili e tutti i deck. Quello che appartiene a un solo look va nel blocco \"strings\" di quello stile; quello che appartiene a un solo brand va in quello del deck. Per aggiungere una lingua copia questo file mantenendo tutte le chiavi; un deck la sceglie con \"locale\": \"<nome>\".",
 
   "scroll": "Scorri →",
   "scroll_caps": "SCORRI →",
   "scroll_plain": "Scorri",
   "continue": "Continua",
 
-  "save": "Salva per la prossima sessione",
+  "save": "Salvalo per dopo",
   "save_caps": "SALVA · SCORRI",
   "follow": "Segui {handle}",
   "follow_caps": "SEGUI {handle}",
 
-  "section": "SEGRETO",
+  "section": "PUNTO",
   "figure": "FIG.",
   "number_abbr": "N.",
-  "focus_lock": "FUOCO · BLOCCO",
 
-  "badge_unit": "SEGRETI",
+  "badge_unit": "PUNTI",
   "deck_fallback": "carosello"
 }

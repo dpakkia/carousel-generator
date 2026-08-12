@@ -25,6 +25,7 @@ Create a new one by dropping a file in that directory. It appears in
   "meta": { "description": "…", "tags": ["dark"] },
 
   "image_style": "the photography this look sits on",
+  "strings": { "focus_lock": "words this look invented" },
 
   "canvas":  { "width": 1080, "height": 1350, "margin": 96 },
   "palette": { "scrim": [12, 14, 20], "ink": "#F0F0EB" },
@@ -193,12 +194,29 @@ invisible to translation and silently pins your style to one language; a test
 fails the build if one appears. Everything else — a deck's title, an arrow
 glyph, a format string like `4:5 · 1080×1350` — is fine as a literal.
 
-A deck chooses its language with `"locale": "it"`, and can override any single
-string without a new locale file:
+Chrome resolves in three layers, each overriding the last:
+
+| Layer | Holds | Example |
+|-------|-------|---------|
+| **style** `strings` | words *this look* invented | v7's `"focus_lock": "FOCUS · LOCK"` |
+| **locale** file | the universal chrome, translated | `"scroll": "Scorri →"` |
+| **deck** `strings` | a brand that words things its own way | `"section": "SEGRETO"` |
 
 ```json
-{ "locale": "en", "strings": { "save": "Pin this for later" } }
+{ "locale": "it", "strings": { "save": "Salvalo per la prossima sessione" } }
 ```
+
+The locale sits **above** the style on purpose: anything genuinely translatable
+belongs in a locale file, and putting it there should beat a style's English
+placeholder rather than lose to it. A style's `strings` is only for props no
+locale can be expected to know about — v7's viewfinder HUD reads `FOCUS · LOCK`
+because that is part of the *look*, the way its corner marks are.
+
+**Keep locale files brand-neutral.** They are inherited by every style and every
+deck. The shipped Italian file once carried the author's own photography framing
+(`SEGRETO`, "per la prossima sessione" — a photo *shoot* session), which read as
+nonsense for a car-care account using the same tool. A test now fails the build
+if a locale picks up one brand's vocabulary. Brand wording goes in the deck.
 
 Strings may interpolate the brand: `"follow": "Follow {handle}"` is resolved
 before the recipe sees it. To add a language, copy `en.json`, translate the
