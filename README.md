@@ -291,6 +291,10 @@ That message is written to be pasted straight back into the conversation. Drop
 the finished file into `carousel/styles/` and it appears in `carousel styles`
 immediately.
 
+[AGENTS.md](AGENTS.md) is the brief for that conversation, and for the other
+jobs this tool deliberately leaves to judgement: writing the copy, writing the
+image-prompt subjects, editing a deck, and looking at what came out.
+
 ---
 
 ## Making it yours

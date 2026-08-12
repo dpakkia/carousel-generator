@@ -300,6 +300,11 @@ error: midnight · cover slide · step 7 (op 'text'): unknown colour 'chartreuse
 Quel messaggio è pensato per essere incollato di nuovo nella conversazione. Metti
 il file finito in `carousel/styles/` e compare subito in `carousel styles`.
 
+[AGENTS.md](AGENTS.md) è il briefing per quella conversazione, e per gli altri
+lavori che questo strumento lascia di proposito al giudizio: scrivere il testo,
+scrivere i soggetti dei prompt immagine, modificare un deck e guardare il
+risultato.
+
 ---
 
 ## Farlo tuo

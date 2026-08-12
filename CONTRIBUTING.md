@@ -4,6 +4,9 @@ The point of this project is that the interesting work happens in **data**, not
 in Python. Before writing code, check whether what you want is a new style file
 or a new locale — most additions are.
 
+Working with an AI agent? [AGENTS.md](AGENTS.md) states what it is expected to
+do and the standard each job is held to.
+
 ## Setup
 
 ```bash
